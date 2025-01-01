@@ -1,0 +1,13 @@
+# Ignore build directories & solution
+bin/
+obj/
+*.sln
+
+# Ignore Visual Studio specific files
+*.user
+*.suo
+*.vcxproj.user
+
+# Ignore Rider/JetBrains specific files
+.idea/
+*.iml

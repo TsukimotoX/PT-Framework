@@ -1,6 +1,3 @@
-﻿namespace PT_Framework;
+﻿namespace ProjectTerra.Framework;
 
-public class Class1
-{
 
-}

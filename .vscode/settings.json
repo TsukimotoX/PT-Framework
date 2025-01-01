@@ -1,0 +1,7 @@
+{
+    "files.exclude": {
+        "bin": true,
+        "obj": true,
+        "PT-Framework.sln": true
+    }
+}

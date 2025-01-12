@@ -49,13 +49,13 @@ jobs:
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        dotnet pack PT-Framework.csproj `
-        --configuration Release `
+        dotnet pack PT-Framework.csproj \
+        --configuration Release \
         --output ./artifacts/nuget/linux/
 
-        dotnet nuget push ./artifacts/nuget/linux/*.nupkg `
-        --source https://api.nuget.org/v3/index.json `
-        --api-key $NUGET_API_KEY `
+        dotnet nuget push ./artifacts/nuget/linux/*.nupkg \
+        --source https://api.nuget.org/v3/index.json \
+        --api-key $NUGET_API_KEY \
         --skip-duplicate
 
   build-macos:
@@ -98,13 +98,13 @@ jobs:
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        dotnet pack PT-Framework.csproj `
-        --configuration Release `
+        dotnet pack PT-Framework.csproj \
+        --configuration Release \
         --output ./artifacts/nuget/macos/
 
-        dotnet nuget push ./artifacts/nuget/macos/*.nupkg `
-        --source https://api.nuget.org/v3/index.json `
-        --api-key $NUGET_API_KEY `
+        dotnet nuget push ./artifacts/nuget/macos/*.nupkg \
+        --source https://api.nuget.org/v3/index.json \
+        --api-key $NUGET_API_KEY \
         --skip-duplicate
 
   build-windows:

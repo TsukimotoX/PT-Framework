@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build-android-arm:
-    runs-on: windows-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout repository
@@ -64,7 +64,7 @@ jobs:
           --skip-duplicate
 
   build-android-arm64:
-    runs-on: windows-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout repository
@@ -118,7 +118,7 @@ jobs:
           --skip-duplicate
 
   build-android-x86:
-    runs-on: windows-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout repository

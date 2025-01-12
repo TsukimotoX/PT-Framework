@@ -25,7 +25,7 @@ jobs:
               runtimeIdentifier: osx-x64
             - os: macos-latest
               targetFramework: net9.0-ios
-              runtimeIdentifier: osx-x64
+              runtimeIdentifier: ios-arm64
             - os: ubuntu-latest
               targetFramework: net9.0
               runtimeIdentifier: linux-x64
@@ -52,7 +52,12 @@ jobs:
           run: dotnet restore PT-Framework.csproj
         
         - name: Publish build artifacts
-          run: dotnet publish PT-Framework.csproj --configuration Release --framework ${{ matrix.targetFramework }} -r ${{ matrix.runtimeIdentifier }} --output ./artifacts/${{ matrix.os }}/${{ matrix.targetFramework }}-${{ matrix.runtimeIdentifier }}
+          run: |
+            dotnet publish PT-Framework.csproj \
+              --configuration Release \
+              --framework ${{ matrix.targetFramework }} \
+              --runtime ${{ matrix.runtimeIdentifier }} \
+              --output ./artifacts/${{ matrix.os }}/${{ matrix.targetFramework }}-${{ matrix.runtimeIdentifier }}
         
         - name: Archive artifacts
           run: |

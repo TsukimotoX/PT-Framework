@@ -4,12 +4,8 @@
     <!-- We need to check if building OS is either Windows or Mac,
       because on Linux building Android and iOS is basically not an option,
       they don't have any workflow for it. So yea, suffer. -->
-    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT' Or '$(OS)' == 'Darwin'">net9.0;net9.0-windows;net9.0-android;net9.0-ios</TargetFrameworks>
-    <TargetFrameworks Condition="'$(OS)' != 'Windows_NT' And '$(OS)' != 'Darwin'">net9.0</TargetFrameworks>
-
-    <RuntimeIdentifiers Condition ="'$(OS)' == 'Windows_NT'">win-x64;win-arm64;android-arm64;android-arm;android-x86</RuntimeIdentifiers>
-    <RuntimeIdentifiers Condition="'$(OS)' == 'Darwin'">osx-x64;ios-arm64</RuntimeIdentifiers>
-    <RuntimeIdentifiers Condition="'$(OS)' != 'Windows_NT' And '$(OS)' != 'Darwin'">linux-x64;linux-arm64</RuntimeIdentifiers>
+    <TargetFrameworks>net9.0;net9.0-windows;net9.0-android;net9.0-ios</TargetFrameworks>
+    <RuntimeIdentifiers>win-x64;win-arm64;osx-x64;ios-arm64;linux-x64;android-arm64;android-arm;android-x86</RuntimeIdentifiers>
 
     <AssemblyName>ProjectTerra.Framework</AssemblyName>
     <RootNamespace>ProjectTerra.Framework</RootNamespace>

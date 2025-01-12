@@ -52,6 +52,7 @@ jobs:
         dotnet pack PT-Framework.csproj \
         --configuration Release \
         -p:PackageVersion=${{ github.run_number }} \
+        -p:PackageId=ProjectTerra.Framework-linux \
         --output ./artifacts/nuget/linux/
 
         dotnet nuget push ./artifacts/nuget/linux/*.nupkg \
@@ -102,6 +103,7 @@ jobs:
         dotnet pack PT-Framework.csproj \
         --configuration Release \
         -p:PackageVersion=${{ github.run_number }} \
+        -p:PackageId=ProjectTerra.Framework-macos \
         --output ./artifacts/nuget/macos/
 
         dotnet nuget push ./artifacts/nuget/macos/*.nupkg \
@@ -153,9 +155,10 @@ jobs:
         dotnet pack PT-Framework.csproj `
         --configuration Release `
         -p:PackageVersion=${{ github.run_number }} `
+        -p:PackageId=ProjectTerra.Framework-windows `
         --output ./artifacts/nuget/windows/
 
-        dotnet nuget push ./artifacts/nuget/windows/*.nupkg `
+        dotnet nuget push $(Resolve-Path ./artifacts/nuget/windows/*.nupkg) `
         --source https://api.nuget.org/v3/index.json `
         --api-key $NUGET_API_KEY `
         --skip-duplicate

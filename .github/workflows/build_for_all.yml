@@ -1,0 +1,56 @@
+name: Build PT-Framework
+
+on:
+    workflow_dispatch:
+
+permissions:
+  contents: write
+  discussions: write
+
+jobs:
+    build:
+        runs-on: ${{ matrix.os }}
+        
+        strategy:
+            matrix:
+                os: [windows-latest, macos-latest, ubuntu-latest]
+                targetFramework: [net9.0, net9.0-windows, net9.0-android, net9.0-ios]
+                runtimeIdentifier: [win-x64, linux-x64, osx-x64]
+                
+                exclude:
+                - os: ubuntu-latest
+                  targetFramework: net9.0-android
+                - os: ubuntu-latest
+                  targetFramework: net9.0-ios
+        
+        steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4.2.2
+
+        - name: Setup .NET Core SDK
+          uses: actions/setup-dotnet@v4.2.0
+          with:
+            dotnet-version: 9.0.x
+        
+        - name: Restore project dependencies
+          run: dotnet restore
+        
+        - name: Publish build artifacts
+          run: dotnet publish --configuration Release --framework ${{ matrix.targetFramework }} -r ${{ matrix.runtimeIdentifier }} --output ./artifacts/${{ matrix.os }}/${{ matrix.targetFramework }}-${{ matrix.runtimeIdentifier }}
+        
+        - name: Archive artifacts
+          run: |
+            mkdir -p ./releases
+            zip -r ./releases/PT-Framework-${{ matrix.os }}-${{ matrix.targetFramework }}-${{ matrix.runtimeIdentifier }}.zip ./artifacts/${{ matrix.os }}/${{ matrix.targetFramework }}-${{ matrix.runtimeIdentifier }}
+        
+        - name: Upload release to GitHub
+          uses: softprops/action-gh-release@v2.2.1
+          with:
+            files: ./releases/*.zip
+            tag_name: testing-phase
+            name: "Testing Phase Release"
+            draft: false
+            prerelease: true
+            generate_release_notes: true
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

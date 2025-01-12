@@ -26,7 +26,7 @@ public unsafe class DefaultWindow : IWindow
     public SDL_Window* getWindow() => _sdlWindow;
 }
 
-public interface IWindow
+public unsafe interface IWindow
 {
     (int width, int height) Size { get; }
     (int x, int y) Position { get; }
@@ -34,4 +34,6 @@ public interface IWindow
 
     void Initialize();
     void Update();
+
+    SDL_Window* getWindow();
 }

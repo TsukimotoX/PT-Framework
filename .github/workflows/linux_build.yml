@@ -57,4 +57,5 @@ jobs:
         # Публикуем на NuGet
         dotnet nuget push ./artifacts/linux-x64/nuget/*.nupkg \
           --source https://api.nuget.org/v3/index.json \
-          --api-key $NUGET_API_KEY
+          --api-key $NUGET_API_KEY \
+          --skip-duplicate

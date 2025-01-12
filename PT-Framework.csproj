@@ -20,7 +20,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet package details.">
-    <PackageId>PT-Framework</PackageId>
+    <PackageId>ProjectTerra.Framework</PackageId>
     <Version>0.0.0</Version>
     <Authors>Tsukimoto</Authors>
     <Description>Cross-platform framework designed to help the development of ProjectTerra and other games</Description>

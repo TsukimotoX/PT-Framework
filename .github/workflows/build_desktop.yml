@@ -9,156 +9,85 @@ permissions:
   discussions: write
 
 jobs:
-  build-linux:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        platform_name: [linux, macos, windows]
+        archive_ext: [tar.gz, tar.gz, zip]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.2.2
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v4.2.0
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Publish build artifacts
+      run: |
+        dotnet publish PT-Framework.csproj \
+          --configuration Release \
+          --framework net9.0 \
+          --output ./artifacts/publish/
+
+    - name: Archive artifacts
+      run: |
+        mkdir -p ./releases
+        tar -czvf ./releases/PT-Framework-${{ matrix.platform_name }}.${{ matrix.archive_ext }} ./artifacts/publish/
+
+    - name: Upload artifacts to GitHub
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-${{ matrix.platform_name }}
+        path: ./artifacts/publish/
+
+    - name: Pack NuGet package
+      run: |
+        dotnet pack PT-Framework.csproj \
+          --configuration Release \
+          -p:PackageVersion=0.0.${{ github.run_number }} \
+          --output ./artifacts/nuget/${{ matrix.platform_name }}/
+
+    - name: Upload NuGet artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: nuget-${{ matrix.platform_name }}
+        path: ./artifacts/nuget/${{ matrix.platform_name }}/
+
+  publish-nuget:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4.2.2
-
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v4.2.0
+    - name: Download NuGet artifacts
+      uses: actions/download-artifact@v3
       with:
-        dotnet-version: 9.0.x
+        name: nuget-linux
+        path: ./nuget/linux/
 
-    - name: Publish build artifacts
-      run: |
-        dotnet publish PT-Framework.csproj \
-          --configuration Release \
-          --framework net9.0 \
-          --output ./artifacts/publish/
-
-    - name: Archive artifacts
-      run: |
-        mkdir -p ./releases
-        tar -czvf ./releases/PT-Framework-linux.tar.gz ./artifacts/publish/
-
-    - name: Upload artifacts to GitHub
-      uses: softprops/action-gh-release@v2.2.1
+    - name: Download NuGet artifacts (macOS)
+      uses: actions/download-artifact@v3
       with:
-        files: ./releases/PT-Framework-linux.tar.gz
-        tag_name: testing-phase
-        name: "Testing Phase Release for PT-Framework"
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: nuget-macos
+        path: ./nuget/macos/
 
-    - name: Pack and publish NuGet package
+    - name: Download NuGet artifacts (Windows)
+      uses: actions/download-artifact@v3
+      with:
+        name: nuget-windows
+        path: ./nuget/windows/
+
+    - name: Publish all NuGet packages
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        dotnet pack PT-Framework.csproj \
-        --configuration Release \
-        -p:PackageVersion=0.0.${{ github.run_number }} \
-        -p:PackageId=ProjectTerra.Framework-linux \
-        --output ./artifacts/nuget/linux/
-
-        dotnet nuget push ./artifacts/nuget/linux/*.nupkg \
-        --source https://api.nuget.org/v3/index.json \
-        --api-key $NUGET_API_KEY \
-        --skip-duplicate
-
-  build-macos:
-    runs-on: macos-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4.2.2
-
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v4.2.0
-      with:
-        dotnet-version: 9.0.x
-
-    - name: Publish build artifacts
-      run: |
-        dotnet publish PT-Framework.csproj \
-          --configuration Release \
-          --framework net9.0 \
-          --output ./artifacts/publish/
-
-    - name: Archive artifacts
-      run: |
-        mkdir -p ./releases
-        tar -czvf ./releases/PT-Framework-macos.tar.gz ./artifacts/publish/
-
-    - name: Upload artifacts to GitHub
-      uses: softprops/action-gh-release@v2.2.1
-      with:
-        files: ./releases/PT-Framework-macos.tar.gz
-        tag_name: testing-phase
-        name: "Testing Phase Release for PT-Framework"
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Pack and publish NuGet package
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: |
-        dotnet pack PT-Framework.csproj \
-        --configuration Release \
-        -p:PackageVersion=0.0.${{ github.run_number }} \
-        -p:PackageId=ProjectTerra.Framework-macos \
-        --output ./artifacts/nuget/macos/
-
-        dotnet nuget push ./artifacts/nuget/macos/*.nupkg \
-        --source https://api.nuget.org/v3/index.json \
-        --api-key $NUGET_API_KEY \
-        --skip-duplicate
-
-  build-windows:
-    runs-on: windows-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4.2.2
-
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v4.2.0
-      with:
-        dotnet-version: 9.0.x
-
-    - name: Publish build artifacts
-      run: |
-        dotnet publish PT-Framework.csproj `
-          --configuration Release `
-          --framework net9.0-windows `
-          --output ./artifacts/publish/
-
-    - name: Archive artifacts
-      shell: powershell
-      run: |
-        New-Item -ItemType Directory -Force -Path .\releases
-        Compress-Archive -Path .\artifacts\publish\* -DestinationPath .\releases\PT-Framework-windows.zip
-
-    - name: Upload artifacts to GitHub
-      uses: softprops/action-gh-release@v2.2.1
-      with:
-        files: ./releases/PT-Framework-windows.zip
-        tag_name: testing-phase
-        name: "Testing Phase Release for PT-Framework"
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Pack and publish NuGet package
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: |
-        dotnet pack PT-Framework.csproj `
-        --configuration Release `
-        -p:PackageVersion=0.0.${{ github.run_number }} `
-        -p:PackageId=ProjectTerra.Framework-windows `
-        --output ./artifacts/nuget/windows/
-
-        dotnet nuget push $(Resolve-Path ./artifacts/nuget/windows/*.nupkg) `
-        --source https://api.nuget.org/v3/index.json `
-        --api-key $NUGET_API_KEY `
-        --skip-duplicate
+        for nupkg in ./nuget/**/*; do
+          dotnet nuget push "$nupkg" \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key $NUGET_API_KEY \
+            --skip-duplicate
+        done

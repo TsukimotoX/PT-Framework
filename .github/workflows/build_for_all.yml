@@ -38,6 +38,14 @@ jobs:
           uses: actions/setup-dotnet@v4.2.0
           with:
             dotnet-version: 9.0.x
+      
+        - name: Install workloads
+          run: |
+            if [[ "${{ matrix.targetFramework }}" == *"ios" ]]; then
+              dotnet workload install ios;
+            elif [[ "${{ matrix.targetFramework }}" == *"android" ]]; then
+              dotnet workload install android;
+            fi
         
         - name: Restore project dependencies
           run: dotnet restore PT-Framework.csproj

@@ -1,0 +1,46 @@
+name: Build PT-Framework for Linux
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  discussions: write
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        
+        steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4.2.2
+
+        - name: Setup .NET Core SDK
+          uses: actions/setup-dotnet@v4.2.0
+          with:
+            dotnet-version: 9.0.x
+        
+        - name: Publish build artifacts
+          run: |
+            dotnet publish PT-Framework.csproj \
+              --configuration Release \
+              --framework net9.0 \
+              --runtime linux-x64 \
+              --output ./artifacts/linux-x64/
+        
+        - name: Archive artifacts
+          run: |
+            mkdir -p ./releases
+            zip -r ./releases/PT-Framework-linux-x64.zip ./artifacts/linux-x64/
+        
+        - name: Upload release to GitHub
+          uses: softprops/action-gh-release@v2.2.1
+          with:
+            files: ./releases/*.zip
+            tag_name: testing-phase
+            name: "Testing Phase Release"
+            draft: false
+            prerelease: false
+            generate_release_notes: true
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

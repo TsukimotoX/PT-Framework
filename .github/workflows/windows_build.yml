@@ -20,6 +20,9 @@ jobs:
       uses: actions/setup-dotnet@v4.2.0
       with:
         dotnet-version: 9.0.x
+    
+    - name: Restore dependencies
+      run: dotnet restore
 
     - name: Publish build artifacts for win-x64
       run: |
@@ -27,7 +30,6 @@ jobs:
           --configuration Release `
           --framework net9.0 `
           --runtime win-x64 `
-          --self-contained false `
           --output ./artifacts/win-x64/publish/
 
     - name: Archive artifacts for win-x64
@@ -78,7 +80,6 @@ jobs:
           --configuration Release `
           --framework net9.0 `
           --runtime win-arm64 `
-          --self-contained false `
           --output ./artifacts/win-arm64/publish/
 
     - name: Archive artifacts for win-arm64

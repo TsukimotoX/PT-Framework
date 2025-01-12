@@ -27,7 +27,7 @@ jobs:
           --configuration Release `
           --framework net9.0-windows `
           --runtime win-x64 `
-          --output ./artifacts/linux-x64/publish/
+          --output ./artifacts/win-x64/publish/
 
     - name: Archive artifacts for win-x64
       run: |

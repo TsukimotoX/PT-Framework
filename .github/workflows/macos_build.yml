@@ -27,6 +27,7 @@ jobs:
           --configuration Release \
           --framework net9.0 \
           --runtime osx-x64 \
+          --self-contained false \
           --output ./artifacts/osx-x64/publish/
 
     - name: Archive artifacts for osx-x64

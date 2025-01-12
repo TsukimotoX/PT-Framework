@@ -27,6 +27,7 @@ jobs:
           --configuration Release `
           --framework net9.0 `
           --runtime win-x64 `
+          --self-contained false `
           --output ./artifacts/win-x64/publish/
 
     - name: Archive artifacts for win-x64
@@ -77,6 +78,7 @@ jobs:
           --configuration Release `
           --framework net9.0 `
           --runtime win-arm64 `
+          --self-contained false `
           --output ./artifacts/win-arm64/publish/
 
     - name: Archive artifacts for win-arm64

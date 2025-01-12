@@ -13,11 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        platform_name: [linux, macos, windows]
-        archive_ext: [tar.gz, tar.gz, zip]
-
     runs-on: ${{ matrix.os }}
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.2.2
@@ -37,57 +33,32 @@ jobs:
     - name: Archive artifacts
       run: |
         mkdir -p ./releases
-        tar -czvf ./releases/PT-Framework-${{ matrix.platform_name }}.${{ matrix.archive_ext }} ./artifacts/publish/
+        tar -czvf ./releases/PT-Framework-${{ matrix.os }}.tar.gz ./artifacts/publish/
 
     - name: Upload artifacts to GitHub
-      uses: actions/upload-artifact@v3
+      uses: softprops/action-gh-release@v2.2.1
       with:
-        name: nuget-${{ matrix.platform_name }}
-        path: ./artifacts/publish/
+        files: ./releases/PT-Framework-${{ matrix.os }}.tar.gz
+        tag_name: testing-phase
+        name: "Testing Phase Release for PT-Framework"
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Pack NuGet package
-      run: |
-        dotnet pack PT-Framework.csproj \
-          --configuration Release \
-          -p:PackageVersion=0.0.${{ github.run_number }} \
-          --output ./artifacts/nuget/${{ matrix.platform_name }}/
-
-    - name: Upload NuGet artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: nuget-${{ matrix.platform_name }}
-        path: ./artifacts/nuget/${{ matrix.platform_name }}/
-
-  publish-nuget:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Download NuGet artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-linux
-        path: ./nuget/linux/
-
-    - name: Download NuGet artifacts (macOS)
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-macos
-        path: ./nuget/macos/
-
-    - name: Download NuGet artifacts (Windows)
-      uses: actions/download-artifact@v3
-      with:
-        name: nuget-windows
-        path: ./nuget/windows/
-
-    - name: Publish all NuGet packages
+    - name: Pack and publish NuGet package
+      if: matrix.os == 'windows-latest'
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        for nupkg in ./nuget/**/*; do
-          dotnet nuget push "$nupkg" \
-            --source https://api.nuget.org/v3/index.json \
-            --api-key $NUGET_API_KEY \
-            --skip-duplicate
-        done
+        dotnet pack PT-Framework.csproj \
+        --configuration Release \
+        -p:PackageVersion=0.0.${{ github.run_number }} \
+        --output ./artifacts/nuget/
+
+        dotnet nuget push ./artifacts/nuget/**.nupkg \
+        --source https://api.nuget.org/v3/index.json \
+        --api-key $NUGET_API_KEY \
+        --skip-duplicate
+

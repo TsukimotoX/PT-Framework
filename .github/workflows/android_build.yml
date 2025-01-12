@@ -33,9 +33,10 @@ jobs:
           --output ./artifacts/publish/
 
     - name: Archive artifacts
+      shell: pwsh
       run: |
-        mkdir -p ./releases
-        zip -r ./releases/PT-Framework-android.zip ./artifacts/publish/
+        New-Item -ItemType Directory -Force -Path .\releases
+        Compress-Archive -Path .\artifacts\publish\* -DestinationPath .\releases\PT-Framework-android.zip
 
     - name: Upload artifacts to GitHub
       uses: softprops/action-gh-release@v2.2.1

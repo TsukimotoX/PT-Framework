@@ -42,9 +42,9 @@ jobs:
         - name: Install workloads
           shell: bash
           run: |
-            if ([[ "${{ matrix.targetFramework }}" == *"ios"* ]]); then
+            if [[ "${{ matrix.targetFramework }}" == *"ios"* ]]; then
               dotnet workload install ios;
-            elif ([[ "${{ matrix.targetFramework }}" == *"android"* ]]); then
+            elif [[ "${{ matrix.targetFramework }}" == *"android"* ]]; then
               dotnet workload install android;
             fi
         

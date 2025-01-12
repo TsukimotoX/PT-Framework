@@ -23,9 +23,9 @@ jobs:
 
     - name: Publish build artifacts
       run: |
-        dotnet publish PT-Framework.csproj `
-          --configuration Release `
-          --framework net9.0 `
+        dotnet publish PT-Framework.csproj \
+          --configuration Release \
+          --framework net9.0 \
           --output ./artifacts/publish/
 
     - name: Archive artifacts
@@ -72,9 +72,9 @@ jobs:
 
     - name: Publish build artifacts
       run: |
-        dotnet publish PT-Framework.csproj `
-          --configuration Release `
-          --framework net9.0 `
+        dotnet publish PT-Framework.csproj \
+          --configuration Release \
+          --framework net9.0 \
           --output ./artifacts/publish/
 
     - name: Archive artifacts

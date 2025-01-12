@@ -28,6 +28,7 @@ jobs:
         dotnet publish PT-Framework.csproj --configuration Release --framework net9.0 --output ./artifacts/publish/
 
     - name: Archive artifacts
+      shell: bash
       run: |
         mkdir -p ./releases
         tar -czvf ./releases/PT-Framework-${{ matrix.os }}.tar.gz ./artifacts/publish/

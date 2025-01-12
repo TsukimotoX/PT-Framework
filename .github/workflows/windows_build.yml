@@ -23,10 +23,10 @@ jobs:
 
     - name: Publish build artifacts for win-x64
       run: |
-        dotnet publish PT-Framework.csproj \
-          --configuration Release \
-          --framework net9.0-windows \
-          --runtime win-x64 \
+        dotnet publish PT-Framework.csproj `
+          --configuration Release `
+          --framework net9.0-windows `
+          --runtime win-x64 `
           --output ./artifacts/linux-x64/publish/
 
     - name: Archive artifacts for win-x64
@@ -50,13 +50,13 @@ jobs:
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        dotnet pack PT-Framework.csproj \
-          --configuration Release \
+        dotnet pack PT-Framework.csproj `
+          --configuration Release `
           --output ./artifacts/win-x64/nuget/
 
-        dotnet nuget push ./artifacts/win-x64/nuget/*.nupkg \
-          --source https://api.nuget.org/v3/index.json \
-          --api-key $NUGET_API_KEY \
+        dotnet nuget push ./artifacts/win-x64/nuget/*.nupkg `
+          --source https://api.nuget.org/v3/index.json `
+          --api-key $NUGET_API_KEY `
           --skip-duplicate
 
   build-win-arm64:
@@ -73,10 +73,10 @@ jobs:
 
     - name: Publish build artifacts for win-arm64
       run: |
-        dotnet publish PT-Framework.csproj \
-          --configuration Release \
-          --framework net9.0-windows \
-          --runtime win-arm64 \
+        dotnet publish PT-Framework.csproj `
+          --configuration Release `
+          --framework net9.0-windows `
+          --runtime win-arm64 `
           --output ./artifacts/win-arm64/publish/
 
     - name: Archive artifacts for win-arm64
@@ -100,12 +100,12 @@ jobs:
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        dotnet pack PT-Framework.csproj \
-          --configuration Release \
+        dotnet pack PT-Framework.csproj `
+          --configuration Release `
           --output ./artifacts/win-arm64/nuget/
 
-        dotnet nuget push ./artifacts/win-arm64/nuget/*.nupkg \
-          --source https://api.nuget.org/v3/index.json \
-          --api-key $NUGET_API_KEY \
+        dotnet nuget push ./artifacts/win-arm64/nuget/*.nupkg `
+          --source https://api.nuget.org/v3/index.json `
+          --api-key $NUGET_API_KEY `
           --skip-duplicate
 

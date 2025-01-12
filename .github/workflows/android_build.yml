@@ -27,10 +27,10 @@ jobs:
 
     - name: Publish build artifacts for android-arm
       run: |
-        dotnet publish PT-Framework.csproj \
-          --configuration Release \
-          --framework net9.0-android \
-          --runtime android-arm \
+        dotnet publish PT-Framework.csproj `
+          --configuration Release `
+          --framework net9.0-android `
+          --runtime android-arm `
           --output ./artifacts/android-arm/publish/
 
     - name: Archive artifacts for android-arm
@@ -54,13 +54,13 @@ jobs:
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        dotnet pack PT-Framework.csproj \
-          --configuration Release \
+        dotnet pack PT-Framework.csproj `
+          --configuration Release `
           --output ./artifacts/android-arm/nuget/
 
-        dotnet nuget push ./artifacts/android-arm/nuget/*.nupkg \
-          --source https://api.nuget.org/v3/index.json \
-          --api-key $NUGET_API_KEY \
+        dotnet nuget push ./artifacts/android-arm/nuget/*.nupkg `
+          --source https://api.nuget.org/v3/index.json `
+          --api-key $NUGET_API_KEY `
           --skip-duplicate
 
   build-android-arm64:
@@ -81,10 +81,10 @@ jobs:
 
     - name: Publish build artifacts for android-arm64
       run: |
-        dotnet publish PT-Framework.csproj \
-          --configuration Release \
-          --framework net9.0-android \
-          --runtime android-arm64 \
+        dotnet publish PT-Framework.csproj `
+          --configuration Release `
+          --framework net9.0-android `
+          --runtime android-arm64 `
           --output ./artifacts/android-arm64/publish/
 
     - name: Archive artifacts for android-arm64
@@ -108,13 +108,13 @@ jobs:
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        dotnet pack PT-Framework.csproj \
-          --configuration Release \
+        dotnet pack PT-Framework.csproj `
+          --configuration Release `
           --output ./artifacts/android-arm64/nuget/
 
-        dotnet nuget push ./artifacts/android-arm64/nuget/*.nupkg \
-          --source https://api.nuget.org/v3/index.json \
-          --api-key $NUGET_API_KEY \
+        dotnet nuget push ./artifacts/android-arm64/nuget/*.nupkg `
+          --source https://api.nuget.org/v3/index.json `
+          --api-key $NUGET_API_KEY `
           --skip-duplicate
 
   build-android-x86:
@@ -135,10 +135,10 @@ jobs:
 
     - name: Publish build artifacts for android-x86
       run: |
-        dotnet publish PT-Framework.csproj \
-          --configuration Release \
-          --framework net9.0-android \
-          --runtime android-x86 \
+        dotnet publish PT-Framework.csproj `
+          --configuration Release `
+          --framework net9.0-android `
+          --runtime android-x86 `
           --output ./artifacts/android-x86/publish/
 
     - name: Archive artifacts for android-x86
@@ -162,11 +162,11 @@ jobs:
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        dotnet pack PT-Framework.csproj \
-          --configuration Release \
+        dotnet pack PT-Framework.csproj `
+          --configuration Release `
           --output ./artifacts/android-x86/nuget/
 
-        dotnet nuget push ./artifacts/android-x86/nuget/*.nupkg \
-          --source https://api.nuget.org/v3/index.json \
-          --api-key $NUGET_API_KEY \
+        dotnet nuget push ./artifacts/android-x86/nuget/*.nupkg `
+          --source https://api.nuget.org/v3/index.json `
+          --api-key $NUGET_API_KEY `
           --skip-duplicate

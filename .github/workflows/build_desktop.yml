@@ -25,10 +25,7 @@ jobs:
 
     - name: Publish build artifacts
       run: |
-        dotnet publish PT-Framework.csproj `
-          --configuration Release `
-          --framework net9.0 `
-          --output ./artifacts/publish/
+        dotnet publish PT-Framework.csproj --configuration Release --framework net9.0 --output ./artifacts/publish/
 
     - name: Archive artifacts
       run: |
@@ -52,13 +49,7 @@ jobs:
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
-        dotnet pack PT-Framework.csproj `
-        --configuration Release `
-        -p:PackageVersion=0.0.${{ github.run_number }} `
-        --output ./artifacts/nuget/
+        dotnet pack PT-Framework.csproj --configuration Release -p:PackageVersion=0.0.${{ github.run_number }} --output ./artifacts/nuget/
 
-        dotnet nuget push ./artifacts/nuget/**.nupkg `
-        --source https://api.nuget.org/v3/index.json `
-        --api-key $NUGET_API_KEY `
-        --skip-duplicate
+        dotnet nuget push ./artifacts/nuget/**.nupkg -source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY --skip-duplicate
 

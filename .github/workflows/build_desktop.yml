@@ -51,7 +51,7 @@ jobs:
       run: |
         dotnet pack PT-Framework.csproj \
         --configuration Release \
-        -p:PackageVersion=${{ github.run_number }} \
+        -p:PackageVersion=0.0.${{ github.run_number }} \
         -p:PackageId=ProjectTerra.Framework-linux \
         --output ./artifacts/nuget/linux/
 
@@ -102,7 +102,7 @@ jobs:
       run: |
         dotnet pack PT-Framework.csproj \
         --configuration Release \
-        -p:PackageVersion=${{ github.run_number }} \
+        -p:PackageVersion=0.0.${{ github.run_number }} \
         -p:PackageId=ProjectTerra.Framework-macos \
         --output ./artifacts/nuget/macos/
 
@@ -154,7 +154,7 @@ jobs:
       run: |
         dotnet pack PT-Framework.csproj `
         --configuration Release `
-        -p:PackageVersion=${{ github.run_number }} `
+        -p:PackageVersion=0.0.${{ github.run_number }} `
         -p:PackageId=ProjectTerra.Framework-windows `
         --output ./artifacts/nuget/windows/
 

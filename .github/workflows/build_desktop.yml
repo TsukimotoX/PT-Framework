@@ -52,5 +52,5 @@ jobs:
       run: |
         dotnet pack PT-Framework.csproj --configuration Release -p:PackageVersion=0.0.${{ github.run_number }} --output ./artifacts/nuget/
 
-        dotnet nuget push ./artifacts/nuget/**.nupkg -source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY --skip-duplicate
+        dotnet nuget push ./artifacts/nuget/**.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY --skip-duplicate
 

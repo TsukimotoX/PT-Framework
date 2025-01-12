@@ -21,13 +21,13 @@ jobs:
               targetFramework: net9.0-android
               runtimeIdentifier: win-x64
             - os: macos-latest
-              targetFramework: net9.0-macos
+              targetFramework: net9.0
               runtimeIdentifier: osx-x64
             - os: macos-latest
               targetFramework: net9.0-ios
               runtimeIdentifier: osx-x64
             - os: ubuntu-latest
-              targetFramework: net9.0-linux
+              targetFramework: net9.0
               runtimeIdentifier: linux-x64
         
         steps:

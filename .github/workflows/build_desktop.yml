@@ -44,12 +44,6 @@ jobs:
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Set version for NuGet package
-      run: |
-        VERSION="0.0.$GITHUB_RUN_NUMBER"
-        echo "Version: $VERSION"
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Pack and publish NuGet package
       env:
@@ -57,7 +51,7 @@ jobs:
       run: |
         dotnet pack PT-Framework.csproj \
         --configuration Release \
-        -p:PackageVersion=$VERSION \
+        -p:PackageVersion=${{ github.run_number }} \
         --output ./artifacts/nuget/linux/
 
         dotnet nuget push ./artifacts/nuget/linux/*.nupkg \
@@ -100,12 +94,6 @@ jobs:
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Set version for NuGet package
-      run: |
-        VERSION="0.0.$GITHUB_RUN_NUMBER"
-        echo "Version: $VERSION"
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Pack and publish NuGet package
       env:
@@ -113,7 +101,7 @@ jobs:
       run: |
         dotnet pack PT-Framework.csproj \
         --configuration Release \
-        -p:PackageVersion=$VERSION \
+        -p:PackageVersion=${{ github.run_number }} \
         --output ./artifacts/nuget/macos/
 
         dotnet nuget push ./artifacts/nuget/macos/*.nupkg \
@@ -158,17 +146,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Set version for NuGet package
-      shell: bash
-      run: echo "VERSION=0.0.$env:GITHUB_RUN_NUMBER" >> $GITHUB_ENV  
-
     - name: Pack and publish NuGet package
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
         dotnet pack PT-Framework.csproj `
         --configuration Release `
-        -p:PackageVersion=$VERSION `
+        -p:PackageVersion=${{ github.run_number }} `
         --output ./artifacts/nuget/windows/
 
         dotnet nuget push ./artifacts/nuget/windows/*.nupkg `

@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Extra files that must be included">
-    <None Include="README.md" Pack="true" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   
   <PropertyGroup Label="Fast-build properties.">

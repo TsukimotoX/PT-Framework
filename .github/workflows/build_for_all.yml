@@ -14,14 +14,25 @@ jobs:
         strategy:
             matrix:
                 os: [windows-latest, macos-latest, ubuntu-latest]
-                targetFramework: [net9.0, net9.0-windows, net9.0-android, net9.0-ios]
-                runtimeIdentifier: [win-x64, linux-x64, osx-x64]
+                targetFramework: [net9.0-windows, net9.0-android, net9.0-macos, net9.0-ios, net9.0-linux]
+                runtimeIdentifier: [win-x64, osx-x64, linux-x64]
                 
-                exclude:
-                - os: ubuntu-latest
+                include:
+                - os: windows-latest
+                  targetFramework: net9.0-windows
+                  runtimeIdentifier: win-x64
+                - os: windows-latest
                   targetFramework: net9.0-android
-                - os: ubuntu-latest
+                  runtimeIdentifier: win-x64
+                - os: macos-latest
+                  targetFramework: net9.0-macos
+                  runtimeIdentifier: osx-x64
+                - os: macos-latest
                   targetFramework: net9.0-ios
+                  runtimeIdentifier: osx-x64
+                - os: ubuntu-latest
+                  targetFramework: net9.0-linux
+                  runtimeIdentifier: linux-x64
         
         steps:
         - name: Checkout repository
@@ -33,10 +44,10 @@ jobs:
             dotnet-version: 9.0.x
         
         - name: Restore project dependencies
-          run: dotnet restore
+          run: dotnet restore PT-Framework.csproj
         
         - name: Publish build artifacts
-          run: dotnet publish --configuration Release --framework ${{ matrix.targetFramework }} -r ${{ matrix.runtimeIdentifier }} --output ./artifacts/${{ matrix.os }}/${{ matrix.targetFramework }}-${{ matrix.runtimeIdentifier }}
+          run: dotnet publish PT-Framework.csproj --configuration Release --framework ${{ matrix.targetFramework }} -r ${{ matrix.runtimeIdentifier }} --output ./artifacts/${{ matrix.os }}/${{ matrix.targetFramework }}-${{ matrix.runtimeIdentifier }}
         
         - name: Archive artifacts
           run: |

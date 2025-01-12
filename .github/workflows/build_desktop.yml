@@ -1,0 +1,158 @@
+name: Build PT-Framework for Desktop
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: write
+  discussions: write
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.2.2
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v4.2.0
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Publish build artifacts
+      run: |
+        dotnet publish PT-Framework.csproj `
+          --configuration Release `
+          --framework net9.0 `
+          --output ./artifacts/publish/
+
+    - name: Archive artifacts
+      run: |
+        mkdir -p ./releases
+        tar -czvf ./releases/PT-Framework-linux.tar.gz ./artifacts/publish/
+
+    - name: Upload artifacts to GitHub
+      uses: softprops/action-gh-release@v2.2.1
+      with:
+        files: ./releases/PT-Framework-linux.tar.gz
+        tag_name: testing-phase
+        name: "Testing Phase Release for PT-Framework"
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Pack and publish NuGet package
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: |
+        dotnet pack PT-Framework.csproj `
+        --configuration Release `
+        --output ./artifacts/nuget/linux/
+
+        dotnet nuget push ./artifacts/nuget/linux/*.nupkg `
+        --source https://api.nuget.org/v3/index.json `
+        --api-key $NUGET_API_KEY `
+        --skip-duplicate
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.2.2
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v4.2.0
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Publish build artifacts
+      run: |
+        dotnet publish PT-Framework.csproj `
+          --configuration Release `
+          --framework net9.0 `
+          --output ./artifacts/publish/
+
+    - name: Archive artifacts
+      run: |
+        mkdir -p ./releases
+        tar -czvf ./releases/PT-Framework-macos.tar.gz ./artifacts/publish/
+
+    - name: Upload artifacts to GitHub
+      uses: softprops/action-gh-release@v2.2.1
+      with:
+        files: ./releases/PT-Framework-macos.tar.gz
+        tag_name: testing-phase
+        name: "Testing Phase Release for PT-Framework"
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Pack and publish NuGet package
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: |
+        dotnet pack PT-Framework.csproj `
+        --configuration Release `
+        --output ./artifacts/nuget/macos/
+
+        dotnet nuget push ./artifacts/nuget/macos/*.nupkg `
+        --source https://api.nuget.org/v3/index.json `
+        --api-key $NUGET_API_KEY `
+        --skip-duplicate
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.2.2
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v4.2.0
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Publish build artifacts
+      run: |
+        dotnet publish PT-Framework.csproj `
+          --configuration Release `
+          --framework net9.0-windows `
+          --output ./artifacts/publish/
+
+    - name: Archive artifacts
+      shell: powershell
+      run: |
+        New-Item -ItemType Directory -Force -Path .\releases
+        Compress-Archive -Path .\artifacts\publish\* -DestinationPath .\releases\PT-Framework-windows.zip
+
+    - name: Upload artifacts to GitHub
+      uses: softprops/action-gh-release@v2.2.1
+      with:
+        files: ./releases/PT-Framework-windows.zip
+        tag_name: testing-phase
+        name: "Testing Phase Release for PT-Framework"
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Pack and publish NuGet package
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: |
+        dotnet pack PT-Framework.csproj `
+        --configuration Release `
+        --output ./artifacts/nuget/windows/
+
+        dotnet nuget push ./artifacts/nuget/windows/*.nupkg `
+        --source https://api.nuget.org/v3/index.json `
+        --api-key $NUGET_API_KEY `
+        --skip-duplicate

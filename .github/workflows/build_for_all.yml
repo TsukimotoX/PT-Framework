@@ -12,27 +12,23 @@ jobs:
         runs-on: ${{ matrix.os }}
         
         strategy:
-            matrix:
-                os: [windows-latest, macos-latest, ubuntu-latest]
-                targetFramework: [net9.0-windows, net9.0-android, net9.0-macos, net9.0-ios, net9.0-linux]
-                runtimeIdentifier: [win-x64, osx-x64, linux-x64]
-                
-                include:
-                - os: windows-latest
-                  targetFramework: net9.0-windows
-                  runtimeIdentifier: win-x64
-                - os: windows-latest
-                  targetFramework: net9.0-android
-                  runtimeIdentifier: win-x64
-                - os: macos-latest
-                  targetFramework: net9.0-macos
-                  runtimeIdentifier: osx-x64
-                - os: macos-latest
-                  targetFramework: net9.0-ios
-                  runtimeIdentifier: osx-x64
-                - os: ubuntu-latest
-                  targetFramework: net9.0-linux
-                  runtimeIdentifier: linux-x64
+          matrix:
+            include:
+            - os: windows-latest
+              targetFramework: net9.0-windows
+              runtimeIdentifier: win-x64
+            - os: windows-latest
+              targetFramework: net9.0-android
+              runtimeIdentifier: win-x64
+            - os: macos-latest
+              targetFramework: net9.0-macos
+              runtimeIdentifier: osx-x64
+            - os: macos-latest
+              targetFramework: net9.0-ios
+              runtimeIdentifier: osx-x64
+            - os: ubuntu-latest
+              targetFramework: net9.0-linux
+              runtimeIdentifier: linux-x64
         
         steps:
         - name: Checkout repository

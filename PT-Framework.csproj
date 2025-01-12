@@ -4,7 +4,7 @@
     <!-- We need to check if building OS is either Windows or Mac,
       because on Linux building Android and iOS is basically not an option,
       they don't have any workflow for it. So yea, suffer. -->
-    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net9.0;net9.0-windows;net9.0-android</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net9.0;net9.0-android</TargetFrameworks>
     <TargetFrameworks Condition="'$(OS)' == 'Darwin'">net9.0;net9.0-ios</TargetFrameworks>
     <TargetFrameworks Condition="'$(OS)' != 'Windows_NT' And '$(OS)' != 'Darwin'">net9.0</TargetFrameworks>
 

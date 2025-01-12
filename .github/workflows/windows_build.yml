@@ -75,7 +75,7 @@ jobs:
       run: |
         dotnet publish PT-Framework.csproj `
           --configuration Release `
-          --framework net9.0-windows `
+          --framework net9.0 `
           --runtime win-arm64 `
           --output ./artifacts/win-arm64/publish/
 

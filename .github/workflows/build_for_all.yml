@@ -48,9 +48,6 @@ jobs:
               dotnet workload install android;
             fi
         
-        - name: Restore project dependencies
-          run: dotnet restore PT-Framework.csproj
-        
         - name: Publish build artifacts
           run: |
             dotnet publish PT-Framework.csproj \
@@ -71,7 +68,7 @@ jobs:
             tag_name: testing-phase
             name: "Testing Phase Release"
             draft: false
-            prerelease: true
+            prerelease: false
             generate_release_notes: true
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -24,12 +24,16 @@
     <Description>Cross-platform framework designed to help the development of ProjectTerra and other games</Description>
     <PackageTags>framework; game; ProjectTerra; game development; cross-platform; cross-platform framework; cross-platform game; PT; PT-Framework; PT Framework;</PackageTags>
     <RepositoryUrl>https://github.com/TsukimotoX/PT-Framework</RepositoryUrl>
-    <PackageReadmeFile>./README.md</PackageReadmeFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup Label="Packages">
     <PackageReference Include="opentk" Version="4.9.3" />
     <PackageReference Include="ppy.sdl3-cs" Version="2025.105.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Extra files that must be included">
+    <None Include="README.md" Pack="true" />
   </ItemGroup>
   
   <PropertyGroup Label="Fast-build properties.">

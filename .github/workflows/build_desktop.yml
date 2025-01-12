@@ -159,10 +159,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Set version for NuGet package
-      shell: pwsh
-      run: |
-        $VERSION = "0.0.$env:GITHUB_RUN_NUMBER"
-        Write-Output "##[set-output name=VERSION;$VERSION]"      
+      shell: bash
+      run: echo "VERSION=0.0.$env:GITHUB_RUN_NUMBER" >> $GITHUB_ENV  
 
     - name: Pack and publish NuGet package
       env:

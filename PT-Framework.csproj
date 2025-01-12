@@ -24,6 +24,7 @@
     <Description>Cross-platform framework designed to help the development of ProjectTerra and other games</Description>
     <PackageTags>framework; game; ProjectTerra; game development; cross-platform; cross-platform framework; cross-platform game; PT; PT-Framework; PT Framework;</PackageTags>
     <RepositoryUrl>https://github.com/TsukimotoX/PT-Framework</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup Label="Packages">

@@ -1,0 +1,61 @@
+name: Build PT-Framework for Mac OS
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: write
+  discussions: write
+
+jobs:
+  build-osx-x64:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.2.2
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v4.2.0
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Publish build artifacts for osx-x64
+      run: |
+        dotnet publish PT-Framework.csproj \
+          --configuration Release \
+          --framework net9.0 \
+          --runtime osx-x64 \
+          --output ./artifacts/osx-x64/publish/
+
+    - name: Archive artifacts for osx-x64
+      run: |
+        mkdir -p ./releases
+        zip -r ./releases/PT-Framework-osx-x64.zip ./artifacts/osx-x64/publish/
+
+    - name: Upload artifacts for osx-x64 to GitHub
+      uses: softprops/action-gh-release@v2.2.1
+      with:
+        files: ./releases/PT-Framework-osx-x64.zip
+        tag_name: testing-phase
+        name: "Testing Phase Release for osx-x64"
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Pack and publish NuGet package for osx-x64
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: |
+        dotnet pack PT-Framework.csproj \
+          --configuration Release \
+          --output ./artifacts/osx-x64/nuget/
+
+        dotnet nuget push ./artifacts/osx-x64/nuget/*.nupkg \
+          --source https://api.nuget.org/v3/index.json \
+          --api-key $NUGET_API_KEY \
+          --skip-duplicate
+

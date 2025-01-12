@@ -1,0 +1,20 @@
+name: Build All Platforms
+
+on:
+  workflow_dispatch:
+
+jobs:
+  windows-build:
+    uses: ./.github/workflows/windows_build.yml
+
+  linux-build:
+    uses: ./.github/workflows/linux_build.yml
+
+  macos-build:
+    uses: ./.github/workflows/macos_build.yml
+
+  ios-build:
+    uses: ./.github/workflows/ios_build.yml 
+
+  android-build:
+    uses: ./.github/workflows/android_build.yml

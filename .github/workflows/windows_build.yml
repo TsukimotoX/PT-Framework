@@ -1,4 +1,4 @@
-name: Build PT-Framework for Linux
+name: Build PT-Framework for Windows
 
 on:
   workflow_dispatch:
@@ -9,8 +9,8 @@ permissions:
   discussions: write
 
 jobs:
-  build-linux-x64:
-    runs-on: ubuntu-latest
+  build-win-x64:
+    runs-on: windows-latest
 
     steps:
     - name: Checkout repository
@@ -21,46 +21,46 @@ jobs:
       with:
         dotnet-version: 9.0.x
 
-    - name: Publish build artifacts for linux-x64
+    - name: Publish build artifacts for win-x64
       run: |
         dotnet publish PT-Framework.csproj \
           --configuration Release \
-          --framework net9.0 \
-          --runtime linux-x64 \
+          --framework net9.0-windows \
+          --runtime win-x64 \
           --output ./artifacts/linux-x64/publish/
 
-    - name: Archive artifacts for linux-x64
+    - name: Archive artifacts for win-x64
       run: |
         mkdir -p ./releases
-        zip -r ./releases/PT-Framework-linux-x64.zip ./artifacts/linux-x64/publish/
+        zip -r ./releases/PT-Framework-win-x64.zip ./artifacts/win-x64/publish/
 
-    - name: Upload artifacts for linux-x64 to GitHub
+    - name: Upload artifacts for win-x64 to GitHub
       uses: softprops/action-gh-release@v2.2.1
       with:
-        files: ./releases/PT-Framework-linux-x64.zip
+        files: ./releases/PT-Framework-win-x64.zip
         tag_name: testing-phase
-        name: "Testing Phase Release for linux-x64"
+        name: "Testing Phase Release for win-x64"
         draft: false
         prerelease: false
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Pack and publish NuGet package for linux-x64
+    - name: Pack and publish NuGet package for win-x64
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
         dotnet pack PT-Framework.csproj \
           --configuration Release \
-          --output ./artifacts/linux-x64/nuget/
+          --output ./artifacts/win-x64/nuget/
 
-        dotnet nuget push ./artifacts/linux-x64/nuget/*.nupkg \
+        dotnet nuget push ./artifacts/win-x64/nuget/*.nupkg \
           --source https://api.nuget.org/v3/index.json \
           --api-key $NUGET_API_KEY \
           --skip-duplicate
 
-  build-linux-arm64:
-    runs-on: ubuntu-latest
+  build-win-arm64:
+    runs-on: windows-latest
 
     steps:
     - name: Checkout repository
@@ -71,40 +71,40 @@ jobs:
       with:
         dotnet-version: 9.0.x
 
-    - name: Publish build artifacts for linux-arm64
+    - name: Publish build artifacts for win-arm64
       run: |
         dotnet publish PT-Framework.csproj \
           --configuration Release \
-          --framework net9.0 \
-          --runtime linux-arm64 \
-          --output ./artifacts/linux-arm64/publish/
+          --framework net9.0-windows \
+          --runtime win-arm64 \
+          --output ./artifacts/win-arm64/publish/
 
-    - name: Archive artifacts for linux-arm64
+    - name: Archive artifacts for win-arm64
       run: |
         mkdir -p ./releases
-        zip -r ./releases/PT-Framework-linux-arm64.zip ./artifacts/linux-arm64/publish/
+        zip -r ./releases/PT-Framework-win-arm64.zip ./artifacts/win-arm64/publish/
 
-    - name: Upload artifacts for linux-arm64 to GitHub
+    - name: Upload artifacts for win-arm64 to GitHub
       uses: softprops/action-gh-release@v2.2.1
       with:
-        files: ./releases/PT-Framework-linux-arm64.zip
+        files: ./releases/PT-Framework-win-arm64.zip
         tag_name: testing-phase
-        name: "Testing Phase Release for linux-arm64"
+        name: "Testing Phase Release for win-arm64"
         draft: false
         prerelease: false
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Pack and publish NuGet package for linux-arm64
+    - name: Pack and publish NuGet package for win-arm64
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
         dotnet pack PT-Framework.csproj \
           --configuration Release \
-          --output ./artifacts/linux-arm64/nuget/
+          --output ./artifacts/win-arm64/nuget/
 
-        dotnet nuget push ./artifacts/linux-arm64/nuget/*.nupkg \
+        dotnet nuget push ./artifacts/win-arm64/nuget/*.nupkg \
           --source https://api.nuget.org/v3/index.json \
           --api-key $NUGET_API_KEY \
           --skip-duplicate

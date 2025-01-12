@@ -9,7 +9,7 @@ permissions:
   discussions: write
 
 jobs:
-  build-osx-x64:
+  build:
     runs-on: macos-latest
 
     steps:
@@ -21,40 +21,39 @@ jobs:
       with:
         dotnet-version: 9.0.x
 
-    - name: Publish build artifacts for osx-x64
+    - name: Publish build artifacts for osx
       run: |
         dotnet publish PT-Framework.csproj \
           --configuration Release \
           --framework net9.0 \
-          --runtime osx-x64 \
-          --output ./artifacts/osx-x64/publish/
+          --output ./artifacts/osx/publish/
 
-    - name: Archive artifacts for osx-x64
+    - name: Archive artifacts for osx
       run: |
         mkdir -p ./releases
-        zip -r ./releases/PT-Framework-osx-x64.zip ./artifacts/osx-x64/publish/
+        zip -r ./releases/PT-Framework-osx.zip ./artifacts/osx/publish/
 
-    - name: Upload artifacts for osx-x64 to GitHub
+    - name: Upload artifacts for osx to GitHub
       uses: softprops/action-gh-release@v2.2.1
       with:
-        files: ./releases/PT-Framework-osx-x64.zip
+        files: ./releases/PT-Framework-osx.zip
         tag_name: testing-phase
-        name: "Testing Phase Release for osx-x64"
+        name: "Testing Phase Release for PT-Framework"
         draft: false
         prerelease: false
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Pack and publish NuGet package for osx-x64
+    - name: Pack and publish NuGet package for osx
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
         dotnet pack PT-Framework.csproj \
           --configuration Release \
-          --output ./artifacts/osx-x64/nuget/
+          --output ./artifacts/osx/nuget/
 
-        dotnet nuget push ./artifacts/osx-x64/nuget/*.nupkg \
+        dotnet nuget push ./artifacts/osx/nuget/*.nupkg \
           --source https://api.nuget.org/v3/index.json \
           --api-key $NUGET_API_KEY \
           --skip-duplicate

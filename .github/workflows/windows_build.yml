@@ -9,60 +9,7 @@ permissions:
   discussions: write
 
 jobs:
-  build-win-x64:
-    runs-on: windows-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4.2.2
-
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v4.2.0
-      with:
-        dotnet-version: 9.0.x
-    
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Publish build artifacts for win-x64
-      run: |
-        dotnet publish PT-Framework.csproj `
-          --configuration Release `
-          --framework net9.0 `
-          --runtime win-x64 `
-          --output ./artifacts/win-x64/publish/
-
-    - name: Archive artifacts for win-x64
-      run: |
-        mkdir -p ./releases
-        zip -r ./releases/PT-Framework-win-x64.zip ./artifacts/win-x64/publish/
-
-    - name: Upload artifacts for win-x64 to GitHub
-      uses: softprops/action-gh-release@v2.2.1
-      with:
-        files: ./releases/PT-Framework-win-x64.zip
-        tag_name: testing-phase
-        name: "Testing Phase Release for win-x64"
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Pack and publish NuGet package for win-x64
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: |
-        dotnet pack PT-Framework.csproj `
-          --configuration Release `
-          --output ./artifacts/win-x64/nuget/
-
-        dotnet nuget push ./artifacts/win-x64/nuget/*.nupkg `
-          --source https://api.nuget.org/v3/index.json `
-          --api-key $NUGET_API_KEY `
-          --skip-duplicate
-
-  build-win-arm64:
+  build:
     runs-on: windows-latest
 
     steps:
@@ -74,40 +21,39 @@ jobs:
       with:
         dotnet-version: 9.0.x
 
-    - name: Publish build artifacts for win-arm64
+    - name: Publish build artifacts
       run: |
         dotnet publish PT-Framework.csproj `
           --configuration Release `
           --framework net9.0 `
-          --runtime win-arm64 `
-          --output ./artifacts/win-arm64/publish/
+          --output ./artifacts/publish/
 
-    - name: Archive artifacts for win-arm64
+    - name: Archive artifacts
       run: |
         mkdir -p ./releases
-        zip -r ./releases/PT-Framework-win-arm64.zip ./artifacts/win-arm64/publish/
+        zip -r ./releases/PT-Framework.zip ./artifacts/publish/
 
-    - name: Upload artifacts for win-arm64 to GitHub
+    - name: Upload artifacts to GitHub
       uses: softprops/action-gh-release@v2.2.1
       with:
-        files: ./releases/PT-Framework-win-arm64.zip
+        files: ./releases/PT-Framework.zip
         tag_name: testing-phase
-        name: "Testing Phase Release for win-arm64"
+        name: "Testing Phase Release for PT-Framework"
         draft: false
         prerelease: false
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Pack and publish NuGet package for win-arm64
+    - name: Pack and publish NuGet package
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
         dotnet pack PT-Framework.csproj `
           --configuration Release `
-          --output ./artifacts/win-arm64/nuget/
+          --output ./artifacts/nuget/
 
-        dotnet nuget push ./artifacts/win-arm64/nuget/*.nupkg `
+        dotnet nuget push ./artifacts/nuget/*.nupkg `
           --source https://api.nuget.org/v3/index.json `
           --api-key $NUGET_API_KEY `
           --skip-duplicate

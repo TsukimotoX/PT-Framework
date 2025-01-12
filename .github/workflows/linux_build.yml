@@ -9,7 +9,7 @@ permissions:
   discussions: write
 
 jobs:
-  build-linux-x64:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,90 +21,39 @@ jobs:
       with:
         dotnet-version: 9.0.x
 
-    - name: Publish build artifacts for linux-x64
+    - name: Publish build artifacts for linux
       run: |
         dotnet publish PT-Framework.csproj \
           --configuration Release \
           --framework net9.0 \
-          --runtime linux-x64 \
-          --output ./artifacts/linux-x64/publish/
+          --output ./artifacts/linux/publish/
 
-    - name: Archive artifacts for linux-x64
+    - name: Archive artifacts for linux
       run: |
         mkdir -p ./releases
-        zip -r ./releases/PT-Framework-linux-x64.zip ./artifacts/linux-x64/publish/
+        zip -r ./releases/PT-Framework-linux.zip ./artifacts/linux/publish/
 
-    - name: Upload artifacts for linux-x64 to GitHub
+    - name: Upload artifacts for linux to GitHub
       uses: softprops/action-gh-release@v2.2.1
       with:
-        files: ./releases/PT-Framework-linux-x64.zip
+        files: ./releases/PT-Framework-linux.zip
         tag_name: testing-phase
-        name: "Testing Phase Release for linux-x64"
+        name: "Testing Phase Release for PT-Framework"
         draft: false
         prerelease: false
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Pack and publish NuGet package for linux-x64
+    - name: Pack and publish NuGet package for linux
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
         dotnet pack PT-Framework.csproj \
           --configuration Release \
-          --output ./artifacts/linux-x64/nuget/
+          --output ./artifacts/linux/nuget/
 
-        dotnet nuget push ./artifacts/linux-x64/nuget/*.nupkg \
-          --source https://api.nuget.org/v3/index.json \
-          --api-key $NUGET_API_KEY \
-          --skip-duplicate
-
-  build-linux-arm64:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4.2.2
-
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v4.2.0
-      with:
-        dotnet-version: 9.0.x
-
-    - name: Publish build artifacts for linux-arm64
-      run: |
-        dotnet publish PT-Framework.csproj \
-          --configuration Release \
-          --framework net9.0 \
-          --runtime linux-arm64 \
-          --output ./artifacts/linux-arm64/publish/
-
-    - name: Archive artifacts for linux-arm64
-      run: |
-        mkdir -p ./releases
-        zip -r ./releases/PT-Framework-linux-arm64.zip ./artifacts/linux-arm64/publish/
-
-    - name: Upload artifacts for linux-arm64 to GitHub
-      uses: softprops/action-gh-release@v2.2.1
-      with:
-        files: ./releases/PT-Framework-linux-arm64.zip
-        tag_name: testing-phase
-        name: "Testing Phase Release for linux-arm64"
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Pack and publish NuGet package for linux-arm64
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: |
-        dotnet pack PT-Framework.csproj \
-          --configuration Release \
-          --output ./artifacts/linux-arm64/nuget/
-
-        dotnet nuget push ./artifacts/linux-arm64/nuget/*.nupkg \
+        dotnet nuget push ./artifacts/linux/nuget/*.nupkg \
           --source https://api.nuget.org/v3/index.json \
           --api-key $NUGET_API_KEY \
           --skip-duplicate

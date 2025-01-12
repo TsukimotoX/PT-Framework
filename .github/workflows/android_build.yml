@@ -9,8 +9,8 @@ permissions:
   discussions: write
 
 jobs:
-  build-android-arm:
-    runs-on: macos-latest
+  build:
+    runs-on: windows-latest
 
     steps:
     - name: Checkout repository
@@ -25,148 +25,39 @@ jobs:
       run: |
         dotnet workload install android
 
-    - name: Publish build artifacts for android-arm
+    - name: Publish build artifacts
       run: |
         dotnet publish PT-Framework.csproj `
           --configuration Release `
           --framework net9.0-android `
-          --runtime android-arm `
-          --output ./artifacts/android-arm/publish/
+          --output ./artifacts/publish/
 
-    - name: Archive artifacts for android-arm
+    - name: Archive artifacts
       run: |
         mkdir -p ./releases
-        zip -r ./releases/PT-Framework-android-arm.zip ./artifacts/android-arm/publish/
+        zip -r ./releases/PT-Framework-android.zip ./artifacts/publish/
 
-    - name: Upload artifacts for android-arm to GitHub
+    - name: Upload artifacts to GitHub
       uses: softprops/action-gh-release@v2.2.1
       with:
-        files: ./releases/PT-Framework-android-arm.zip
+        files: ./releases/PT-Framework-android.zip
         tag_name: testing-phase
-        name: "Testing Phase Release for android-arm"
+        name: "Testing Phase Release for Android"
         draft: false
         prerelease: false
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Pack and publish NuGet package for android-arm
+    - name: Pack and publish NuGet package
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
         dotnet pack PT-Framework.csproj `
           --configuration Release `
-          --output ./artifacts/android-arm/nuget/
+          --output ./artifacts/nuget/
 
-        dotnet nuget push ./artifacts/android-arm/nuget/*.nupkg `
-          --source https://api.nuget.org/v3/index.json `
-          --api-key $NUGET_API_KEY `
-          --skip-duplicate
-
-  build-android-arm64:
-    runs-on: macos-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4.2.2
-
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v4.2.0
-      with:
-        dotnet-version: 9.0.x
-
-    - name: Install Android workload
-      run: |
-        dotnet workload install android
-
-    - name: Publish build artifacts for android-arm64
-      run: |
-        dotnet publish PT-Framework.csproj `
-          --configuration Release `
-          --framework net9.0-android `
-          --runtime android-arm64 `
-          --output ./artifacts/android-arm64/publish/
-
-    - name: Archive artifacts for android-arm64
-      run: |
-        mkdir -p ./releases
-        zip -r ./releases/PT-Framework-android-arm64.zip ./artifacts/android-arm64/publish/
-
-    - name: Upload artifacts for android-arm64 to GitHub
-      uses: softprops/action-gh-release@v2.2.1
-      with:
-        files: ./releases/PT-Framework-android-arm64.zip
-        tag_name: testing-phase
-        name: "Testing Phase Release for android-arm64"
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Pack and publish NuGet package for android-arm64
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: |
-        dotnet pack PT-Framework.csproj `
-          --configuration Release `
-          --output ./artifacts/android-arm64/nuget/
-
-        dotnet nuget push ./artifacts/android-arm64/nuget/*.nupkg `
-          --source https://api.nuget.org/v3/index.json `
-          --api-key $NUGET_API_KEY `
-          --skip-duplicate
-
-  build-android-x86:
-    runs-on: macos-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4.2.2
-
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v4.2.0
-      with:
-        dotnet-version: 9.0.x
-
-    - name: Install Android workload
-      run: |
-        dotnet workload install android
-
-    - name: Publish build artifacts for android-x86
-      run: |
-        dotnet publish PT-Framework.csproj `
-          --configuration Release `
-          --framework net9.0-android `
-          --runtime android-x86 `
-          --output ./artifacts/android-x86/publish/
-
-    - name: Archive artifacts for android-x86
-      run: |
-        mkdir -p ./releases
-        zip -r ./releases/PT-Framework-android-x86.zip ./artifacts/android-x86/publish/
-
-    - name: Upload artifacts for android-x86 to GitHub
-      uses: softprops/action-gh-release@v2.2.1
-      with:
-        files: ./releases/PT-Framework-android-x86.zip
-        tag_name: testing-phase
-        name: "Testing Phase Release for android-x86"
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Pack and publish NuGet package for android-x86
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: |
-        dotnet pack PT-Framework.csproj `
-          --configuration Release `
-          --output ./artifacts/android-x86/nuget/
-
-        dotnet nuget push ./artifacts/android-x86/nuget/*.nupkg `
+        dotnet nuget push ./artifacts/nuget/*.nupkg `
           --source https://api.nuget.org/v3/index.json `
           --api-key $NUGET_API_KEY `
           --skip-duplicate

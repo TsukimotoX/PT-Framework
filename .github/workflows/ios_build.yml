@@ -9,7 +9,7 @@ permissions:
   discussions: write
 
 jobs:
-  build-ios-arm64:
+  build:
     runs-on: macos-latest
 
     steps:
@@ -25,40 +25,40 @@ jobs:
       run: |
         dotnet workload install ios
 
-    - name: Publish build artifacts for ios-arm64
+    - name: Publish build artifacts for ios
       run: |
         dotnet publish PT-Framework.csproj \
           --configuration Release \
           --framework net9.0-ios \
-          --runtime ios-arm64 \
-          --output ./artifacts/ios-arm64/publish/
+          --output ./artifacts/ios/publish/
 
-    - name: Archive artifacts for ios-arm64
+    - name: Archive artifacts for ios
       run: |
         mkdir -p ./releases
-        zip -r ./releases/PT-Framework-ios-arm64.zip ./artifacts/ios-arm64/publish/
+        zip -r ./releases/PT-Framework-ios.zip ./artifacts/ios/publish/
 
-    - name: Upload artifacts for ios-arm64 to GitHub
+    - name: Upload artifacts for ios to GitHub
       uses: softprops/action-gh-release@v2.2.1
       with:
-        files: ./releases/PT-Framework-ios-arm64.zip
+        files: ./releases/PT-Framework-ios.zip
         tag_name: testing-phase
-        name: "Testing Phase Release for ios-arm64"
+        name: "Testing Phase Release for PT-Framework"
         draft: false
         prerelease: false
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Pack and publish NuGet package for ios-arm64
+    - name: Pack and publish NuGet package for ios
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       run: |
         dotnet pack PT-Framework.csproj \
           --configuration Release \
-          --output ./artifacts/ios-arm64/nuget/
+          --output ./artifacts/ios/nuget/
 
-        dotnet nuget push ./artifacts/ios-arm64/nuget/*.nupkg \
+        dotnet nuget push ./artifacts/ios/nuget/*.nupkg \
           --source https://api.nuget.org/v3/index.json \
           --api-key $NUGET_API_KEY \
           --skip-duplicate
+

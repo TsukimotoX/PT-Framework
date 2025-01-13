@@ -82,7 +82,9 @@ jobs:
       
     - name: Install ${{ matrix.os }} workload
       run: |
+        dotnet workload clean
         dotnet workload install ${{ matrix.os }}
+        dotnet restore
 
     - name: Publish build artifacts
       env:

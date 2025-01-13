@@ -93,6 +93,9 @@ jobs:
               <file src="artifacts/ubuntu-latest-artifacts/**/*" target="lib/net9.0" />
               <file src="artifacts/macos-latest-artifacts/**/*" target="lib/net9.0" />
             </files>
+            <dependencies>
+              <group targetFramework="net9.0" />
+            </dependencies>
           </package>' > ProjectTerra.Framework.nuspec
   
     - name: Pack NuGet package
@@ -101,4 +104,4 @@ jobs:
     - name: Publish to NuGet
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: dotnet nuget push artifacts/nuget/*.nupkg --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push artifacts/nuget/ProjectTerra.Framework.0.0.${{ github.run_number }}.nupkg --source https://api.nuget.org/v3/index.json

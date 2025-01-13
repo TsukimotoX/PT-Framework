@@ -25,14 +25,13 @@ jobs:
     - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v4.2.0
       with:
-        dotnet-version: 9.0.x
-        dotnet-quality: 'preview'
+        dotnet-version: 8.x
 
     - name: Publish build artifacts
       env:
         BUILD_NUMBER: ${{ github.run_number }}
       run: |
-        dotnet publish PT-Framework.csproj --configuration Release --framework net9.0 --output artifacts/publish/desktop/${{ matrix.os }}/ /p:Version=0.0.${{ github.run_number }}
+        dotnet publish PT-Framework.csproj --configuration Release --framework net8.0 --output artifacts/publish/desktop/${{ matrix.os }}/ /p:Version=0.0.${{ github.run_number }}
 
     - name: Archive artifacts (ubuntu and macos)
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
@@ -77,8 +76,7 @@ jobs:
     - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v4.2.0
       with:
-        dotnet-version: 9.0.x
-        dotnet-quality: 'preview'
+        dotnet-version: 8.x
       
     - name: Install ${{ matrix.os }} workload
       run: |
@@ -92,7 +90,7 @@ jobs:
         BUILD_NUMBER: ${{ github.run_number }}
       run: |
         dotnet restore PT-Framework.csproj
-        dotnet publish PT-Framework.csproj --configuration Release --framework net9.0-${{ matrix.os }} --output artifacts/publish/desktop/${{ matrix.os }}/ /p:Version=0.0.${{ github.run_number }}
+        dotnet publish PT-Framework.csproj --configuration Release --framework net8.0-${{ matrix.os }} --output artifacts/publish/desktop/${{ matrix.os }}/ /p:Version=0.0.${{ github.run_number }}
       
 
     - name: Archive artifacts
@@ -128,8 +126,7 @@ jobs:
     - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v4.2.0
       with:
-        dotnet-version: 9.0.x
-        dotnet-quality: 'preview'
+        dotnet-version: 8.x
 
     - name: Download artifacts
       uses: actions/download-artifact@v4.1.8
@@ -138,18 +135,18 @@ jobs:
     
     - name: Organize files for NuGet package
       run: |
-        mkdir -p nuget/lib/net9.0
-        mkdir -p nuget/lib/net9.0-windows
-        mkdir -p nuget/lib/net9.0-ios
-        mkdir -p nuget/lib/net9.0-android
+        mkdir -p nuget/lib/net8.0
+        mkdir -p nuget/lib/net8.0-windows
+        mkdir -p nuget/lib/net8.0-ios
+        mkdir -p nuget/lib/net8.0-android
 
-        Copy-Item -Path artifacts/windows-latest-desktop-artifacts/* -Destination nuget/lib/net9.0/ -Recurse -Force
-        Copy-Item -Path artifacts/linux-latest-desktop-artifacts/* -Destination nuget/lib/net9.0/ -Recurse -Force
-        Copy-Item -Path artifacts/macos-latest-desktop-artifacts/* -Destination nuget/lib/net9.0/ -Recurse -Force
-        Copy-Item -Path artifacts/windows-latest-desktop-artifacts/* -Destination nuget/lib/net9.0-windows/ -Recurse -Force
+        Copy-Item -Path artifacts/windows-latest-desktop-artifacts/* -Destination nuget/lib/net8.0/ -Recurse -Force
+        Copy-Item -Path artifacts/linux-latest-desktop-artifacts/* -Destination nuget/lib/net8.0/ -Recurse -Force
+        Copy-Item -Path artifacts/macos-latest-desktop-artifacts/* -Destination nuget/lib/net8.0/ -Recurse -Force
+        Copy-Item -Path artifacts/windows-latest-desktop-artifacts/* -Destination nuget/lib/net8.0-windows/ -Recurse -Force
 
-        Copy-Item -Path artifacts/ios-mobile-artifacts/* -Destination nuget/lib/net9.0-ios/ -Recurse -Force
-        Copy-Item -Path artifacts/android-mobile-artifacts/* -Destination nuget/lib/net9.0-android/ -Recurse -Force
+        Copy-Item -Path artifacts/ios-mobile-artifacts/* -Destination nuget/lib/net8.0-ios/ -Recurse -Force
+        Copy-Item -Path artifacts/android-mobile-artifacts/* -Destination nuget/lib/net8.0-android/ -Recurse -Force
 
     - name: Pack NuGet package
       run: |
@@ -158,5 +155,4 @@ jobs:
     - name: Publish to NuGet
       run: |
         dotnet nuget push artifacts/nuget/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-
 

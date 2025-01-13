@@ -84,6 +84,8 @@ jobs:
       run: |
         dotnet workload install ${{ matrix.os }}
         dotnet restore
+        dotnet workload list
+        dotnet nuget locals all --clear
 
     - name: Publish build artifacts
       env:

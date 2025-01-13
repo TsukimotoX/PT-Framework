@@ -51,6 +51,7 @@ jobs:
 
     - name: Archive artifacts
       run: |
+        ls -R ./artifacts/publish/${{ matrix.os }}/
         mkdir -p ./releases
         zip -r ./releases/PT-Framework-${{ matrix.os }}.zip ./artifacts/publish/${{ matrix.os }}/
       

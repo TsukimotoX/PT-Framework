@@ -22,21 +22,28 @@ jobs:
       uses: actions/setup-dotnet@v4.2.0
       with:
         dotnet-version: 9.0.x
+        dotnet-quality: 'preview'
 
     - name: Publish build artifacts
       run: |
-        dotnet publish PT-Framework.csproj --configuration Release --framework net9.0 --output ./artifacts/publish/
+        dotnet publish PT-Framework.csproj --configuration Release --framework net9.0 --output artifacts/publish/${{ matrix.os }}/
 
     - name: Archive artifacts
       shell: bash
       run: |
         mkdir -p ./releases
-        tar -czvf ./releases/PT-Framework-${{ matrix.os }}.tar.gz ./artifacts/publish/
+        zip -r ./releases/PT-Framework-${{ matrix.os }}.zip ./artifacts/publish/${{ matrix.os }}/
+    
+    - name: Upload artifacts to GitHub Actions
+      uses: actions/upload-artifact@v4.6.0
+      with:
+          name: ${{ matrix.os }}-artifacts
+          path: artifacts
 
-    - name: Upload artifacts to GitHub
+    - name: Upload artifacts to GitHub Releases
       uses: softprops/action-gh-release@v2.2.1
       with:
-        files: ./releases/PT-Framework-${{ matrix.os }}.tar.gz
+        files: ./releases/PT-Framework-${{ matrix.os }}.zip
         tag_name: testing-phase
         name: "Testing Phase Release for PT-Framework"
         draft: false
@@ -45,12 +52,38 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Pack and publish NuGet package
-      if: matrix.os == 'windows-latest'
+  nuget-upload:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4.1.8
+      with:
+        path: artifacts
+    
+    - name: Generate package file
+      run: |
+        echo '<?xml version="1.0"?>
+          <package >
+            <metadata>
+              <id>ProjectTerra.Framework</id>
+              <version>0.0.${{ github.run_number }}</version>
+              <authors>Tsukimoto</authors>
+              <requireLicenseAcceptance>false</requireLicenseAcceptance>
+              <description>Cross-platform framework designed to help the development of ProjectTerra and other games</description>
+            </metadata>
+            <files>
+              <file src="artifacts/publish/windows-latest/**/*" target="lib/net9.0" />
+              <file src="artifacts/publish/ubuntu-latest/**/*" target="lib/net9.0" />
+              <file src="artifacts/publish/macos-latest/**/*" target="lib/net9.0" />
+            </files>
+          </package>' > ProjectTerra.Framework.nuspec
+  
+    - name: Pack NuGet package
+      run: nuget pack ProjectTerra.Framework.nuspec -OutputDirectory artifacts/nuget/
+  
+    - name: Publish to NuGet
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: |
-        dotnet pack PT-Framework.csproj --configuration Release -p:PackageVersion=0.0.${{ github.run_number }} --output ./artifacts/nuget/
-
-        dotnet nuget push ./artifacts/nuget/**.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY --skip-duplicate
-
+      run: dotnet nuget push artifacts/nuget/*.nupkg --source https://api.nuget.org/v3/index.json

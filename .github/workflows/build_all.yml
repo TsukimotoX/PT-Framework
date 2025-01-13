@@ -4,14 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  windows-build:
-    uses: ./.github/workflows/windows_build.yml
-
-  linux-build:
-    uses: ./.github/workflows/linux_build.yml
-
-  macos-build:
-    uses: ./.github/workflows/macos_build.yml
+  desktop-build:
+    uses: ./.github/workflows/build_desktop.yml 
 
   ios-build:
     uses: ./.github/workflows/ios_build.yml 

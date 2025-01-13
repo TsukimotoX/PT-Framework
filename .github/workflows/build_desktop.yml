@@ -99,6 +99,7 @@ jobs:
       run: nuget pack ProjectTerra.Framework.nuspec -OutputDirectory artifacts/nuget/
   
     - name: Publish to NuGet
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: dotnet nuget push artifacts/nuget/ProjectTerra.Framework.0.0.${{ github.run_number }}.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY
+      run: dotnet nuget push artifacts/nuget/ProjectTerra.Framework.0.0.${{ github.run_number }}.nupkg \
+        --api-key ${{ secrets.NUGET_API_KEY }} \
+        --source https://api.nuget.org/v3/index.json \
+        --skip-duplicate

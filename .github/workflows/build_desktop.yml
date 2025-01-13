@@ -13,7 +13,7 @@ permissions:
   discussions: write
 
 jobs:
-  build:
+  build-desktop:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -30,30 +30,77 @@ jobs:
 
     - name: Publish build artifacts
       run: |
-        dotnet publish PT-Framework.csproj --configuration Release --framework net9.0 --output artifacts/publish/${{ matrix.os }}/
+        dotnet publish PT-Framework.csproj --configuration Release --framework net9.0 --output artifacts/publish/desktop/${{ matrix.os }}/
 
     - name: Archive artifacts (ubuntu and macos)
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       run: |
         mkdir -p ./releases
-        zip -r ./releases/PT-Framework-${{ matrix.os }}.zip ./artifacts/publish/${{ matrix.os }}/
+        zip -r ./releases/PT-Framework-${{ matrix.os }}.zip ./artifacts/publish/desktop/${{ matrix.os }}/
       
     - name: Archive artifacts (windows)
       if: matrix.os == 'windows-latest'
       run: |
         mkdir -p ./releases
-        Compress-Archive -Path ./artifacts/publish/${{ matrix.os }}/* -DestinationPath ./releases/PT-Framework-${{ matrix.os }}.zip
+        Compress-Archive -Path ./artifacts/publish/desktop/${{ matrix.os }}/* -DestinationPath ./releases/PT-Framework-${{ matrix.os }}.zip
     
     - name: Upload artifacts to GitHub Actions
       uses: actions/upload-artifact@v4.6.0
       with:
-          name: ${{ matrix.os }}-artifacts
+          name: ${{ matrix.os }}-desktop-artifacts
           path: artifacts
 
     - name: Upload artifacts to GitHub Releases
       uses: softprops/action-gh-release@v2.2.1
       with:
-        files: ./releases/PT-Framework-${{ matrix.os }}.zip
+        files: ./releases/PT-Framework-desktop-${{ matrix.os }}.zip
+        tag_name: testing-phase
+        name: "Testing Phase Release for PT-Framework"
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  
+  build-mobile:
+    strategy:
+      matrix:
+        os: [android, ios]
+    runs-on: macos-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.2.2
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v4.2.0
+      with:
+        dotnet-version: 9.0.x
+        dotnet-quality: 'preview'
+      
+    - name: Install ${{ matrix.os }} workload
+      run: |
+        dotnet workload install ${{ matrix.os }}
+
+    - name: Publish build artifacts
+      run: |
+        dotnet publish PT-Framework.csproj --configuration Release --framework net9.0-${{ matrix.os }} --output artifacts/publish/mobile/${{ matrix.os }}/
+
+    - name: Archive artifacts
+      run: |
+        mkdir -p ./releases
+        zip -r ./releases/PT-Framework-${{ matrix.os }}.zip ./artifacts/publish/mobile/${{ matrix.os }}/
+
+    - name: Upload artifacts to GitHub Actions
+      uses: actions/upload-artifact@v4.6.0
+      with:
+          name: ${{ matrix.os }}-mobile-artifacts
+          path: artifacts
+    
+    - name: Upload artifacts to GitHub Releases
+      uses: softprops/action-gh-release@v2.2.1
+      with:
+        files: ./releases/PT-Framework-mobile-${{ matrix.os }}.zip
         tag_name: testing-phase
         name: "Testing Phase Release for PT-Framework"
         draft: false
@@ -64,49 +111,43 @@ jobs:
 
   nuget-upload:
     runs-on: windows-latest
-    needs: build
+    needs: [build-desktop, build-mobile]
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.2.2
+        
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v4.2.0
+      with:
+        dotnet-version: 9.0.x
+        dotnet-quality: 'preview'
 
     - name: Download artifacts
       uses: actions/download-artifact@v4.1.8
       with:
         path: artifacts
     
-    - name: Setup NuGet CLI
-      uses: nuget/setup-nuget@v2
-      with:
-        nuget-version: '5.x'
-        
-    - name: Generate package file
+    - name: Organize files for NuGet package
       run: |
-        echo '<?xml version="1.0"?>
-          <package >
-            <metadata>
-              <id>ProjectTerra.Framework</id>
-              <version>0.0.${{ github.run_number }}</version>
-              <authors>Tsukimoto</authors>
-              <requireLicenseAcceptance>false</requireLicenseAcceptance>
-              <description>Cross-platform framework designed to help the development of ProjectTerra and other games</description>
-              <license type="file">LiCENSE</license>
-              <repository type="git" url="https://github.com/TsukimotoX/PT-Framework" />
-              <readme>README.md</readme>
-            </metadata>
-            <files>
-              <file src="README.md" target="." />
-              <file src="LICENSE" target="." />
-              <file src="artifacts/windows-latest-artifacts/**/*" target="lib/net9.0/" />
-              <file src="artifacts/ubuntu-latest-artifacts/**/*" target="lib/net9.0/" />
-              <file src="artifacts/macos-latest-artifacts/**/*" target="lib/net9.0/" />
-            </files>
-          </package>' > ProjectTerra.Framework.nuspec
-  
+        mkdir -p nuget/lib/net9.0
+        mkdir -p nuget/lib/net9.0-windows
+        mkdir -p nuget/lib/net9.0-ios
+        mkdir -p nuget/lib/net9.0-android
+
+        Copy-Item -Path artifacts/windows-latest-desktop-artifacts/* -Destination nuget/lib/net9.0/ -Recurse -Force
+        Copy-Item -Path artifacts/linux-latest-desktop-artifacts/* -Destination nuget/lib/net9.0/ -Recurse -Force
+        Copy-Item -Path artifacts/macos-latest-desktop-artifacts/* -Destination nuget/lib/net9.0/ -Recurse -Force
+        Copy-Item -Path artifacts/windows-latest-desktop-artifacts/* -Destination nuget/lib/net9.0-windows/ -Recurse -Force
+
+        Copy-Item -Path artifacts/ios-mobile-artifacts/* -Destination nuget/lib/net9.0-ios/ -Recurse -Force
+        Copy-Item -Path artifacts/android-mobile-artifacts/* -Destination nuget/lib/net9.0-android/ -Recurse -Force
+
     - name: Pack NuGet package
-      run: nuget pack ProjectTerra.Framework.nuspec -OutputDirectory artifacts/nuget/
-  
+      run: |
+        dotnet pack PT-Framework.csproj --no-build --output artifacts/nuget --include-symbols --include-source
+
     - name: Publish to NuGet
-      run: dotnet nuget push artifacts/nuget/ProjectTerra.Framework.0.0.${{ github.run_number }}.nupkg `
-        --api-key ${{ secrets.NUGET_API_KEY }} `
-        --source https://api.nuget.org/v3/index.json `
-        --skip-duplicate
+      run: |
+        dotnet nuget push artifacts/nuget/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+

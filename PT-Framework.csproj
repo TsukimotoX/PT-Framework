@@ -1,14 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Label="Project Details">
     <OutputType>Library</OutputType>
-    <!-- We need to check if building OS is either Windows or Mac,
-      because on Linux building Android and iOS is basically not an option,
-      they don't have any workflow for it. So yea, suffer. -->
-    
-    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net9.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(OS)' == 'Darwin'">net9.0;net9.0-ios;net9.0-android;</TargetFrameworks>
-    <TargetFrameworks Condition="'$(OS)' != 'Windows_NT' And '$(OS)' != 'Darwin'">net9.0</TargetFrameworks>
-    <!-- ^-man, how come you can't just use linux as platform? -->
+    <!-- DO NOT REMOVE THIS OR ELSE THE BUILD BREAKS!!!! -->
+    <PropertyGroup>
+      <TargetFrameworks>net9.0;$(AdditionalFrameworks)</TargetFrameworks>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+      <AdditionalFrameworks>net9.0-windows</AdditionalFrameworks>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(OS)' == 'Darwin'">
+      <AdditionalFrameworks>net9.0-ios;net9.0-android</AdditionalFrameworks>
+    </PropertyGroup>
 
     <AssemblyName>ProjectTerra.Framework</AssemblyName>
     <RootNamespace>ProjectTerra.Framework</RootNamespace>
@@ -19,12 +21,13 @@
 
   <PropertyGroup Label="NuGet package details.">
     <PackageId>ProjectTerra.Framework</PackageId>
-    <PackageVersion>0.0.0</PackageVersion>
-    <Version>0.0.0</Version>
+    <PackageVersion>0.0.$(BUILD_NUMBER)</PackageVersion>
+    <Version>0.0.$(BUILD_NUMBER)</Version>
     <Authors>Tsukimoto</Authors>
     <Description>Cross-platform framework designed to help the development of ProjectTerra and other games</Description>
     <PackageTags>framework; game; ProjectTerra; game development; cross-platform; cross-platform framework; cross-platform game; PT; PT-Framework; PT Framework;</PackageTags>
     <RepositoryUrl>https://github.com/TsukimotoX/PT-Framework</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
@@ -35,6 +38,7 @@
 
   <ItemGroup Label="Extra files that must be included">
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="LICENSE" Pack="true" PackagePath="\" />
   </ItemGroup>
   
   <PropertyGroup Label="Fast-build properties.">

@@ -89,9 +89,9 @@ jobs:
               <description>Cross-platform framework designed to help the development of ProjectTerra and other games</description>
             </metadata>
             <files>
-              <file src="artifacts/publish/windows-latest/**/*" target="lib/net9.0" />
-              <file src="artifacts/publish/ubuntu-latest/**/*" target="lib/net9.0" />
-              <file src="artifacts/publish/macos-latest/**/*" target="lib/net9.0" />
+              <file src="artifacts/windows-latest-artifacts/**/*" target="lib/net9.0" />
+              <file src="artifacts/ubuntu-latest-artifacts/**/*" target="lib/net9.0" />
+              <file src="artifacts/macos-latest-artifacts/**/*" target="lib/net9.0" />
             </files>
           </package>' > ProjectTerra.Framework.nuspec
   

@@ -76,7 +76,7 @@ jobs:
     
     - name: Uninstall .NET 8 (conflicts)
       run: |
-        rm -rf ~/.dotnet/sdk/8.0*
+        rm -rf ~/.dotnet/sdk/8.0.11*
 
     - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v4.2.0

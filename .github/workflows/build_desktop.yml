@@ -29,8 +29,10 @@ jobs:
         dotnet-quality: 'preview'
 
     - name: Publish build artifacts
+      env:
+        BUILD_NUMBER: ${{ github.run_number }}
       run: |
-        dotnet publish PT-Framework.csproj --configuration Release --framework net9.0 --output artifacts/publish/desktop/${{ matrix.os }}/
+        dotnet publish PT-Framework.csproj --configuration Release --framework net9.0 --output artifacts/publish/desktop/${{ matrix.os }}/ /p:Version=0.0.${{ github.run_number }}
 
     - name: Archive artifacts (ubuntu and macos)
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
@@ -83,8 +85,11 @@ jobs:
         dotnet workload install ${{ matrix.os }}
 
     - name: Publish build artifacts
+      env:
+        BUILD_NUMBER: ${{ github.run_number }}
       run: |
-        dotnet publish PT-Framework.csproj --configuration Release --framework net9.0-${{ matrix.os }} --output artifacts/publish/mobile/${{ matrix.os }}/
+        dotnet publish PT-Framework.csproj --configuration Release --framework net9.0-${{ matrix.os }} --output artifacts/publish/desktop/${{ matrix.os }}/ /p:Version=0.0.${{ github.run_number }}
+      
 
     - name: Archive artifacts
       run: |

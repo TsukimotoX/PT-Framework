@@ -5,7 +5,7 @@
       because on Linux building Android and iOS is basically not an option,
       they don't have any workflow for it. So yea, suffer. -->
     
-    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net9.0;net9.0-windows;</TargetFrameworks>
+    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">net9.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(OS)' == 'Darwin'">net9.0;net9.0-ios;net9.0-android;</TargetFrameworks>
     <TargetFrameworks Condition="'$(OS)' != 'Windows_NT' And '$(OS)' != 'Darwin'">net9.0</TargetFrameworks>
     <!-- ^-man, how come you can't just use linux as platform? -->

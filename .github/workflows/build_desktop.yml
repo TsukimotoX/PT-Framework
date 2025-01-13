@@ -91,6 +91,7 @@ jobs:
       env:
         BUILD_NUMBER: ${{ github.run_number }}
       run: |
+        dotnet restore PT-Framework.csproj
         dotnet publish PT-Framework.csproj --configuration Release --framework net9.0-${{ matrix.os }} --output artifacts/publish/desktop/${{ matrix.os }}/ /p:Version=0.0.${{ github.run_number }}
       
 

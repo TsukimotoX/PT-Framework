@@ -87,8 +87,13 @@ jobs:
               <authors>Tsukimoto</authors>
               <requireLicenseAcceptance>false</requireLicenseAcceptance>
               <description>Cross-platform framework designed to help the development of ProjectTerra and other games</description>
+              <license type="expression">Custom</license>
+              <repository type="git" url="https://github.com/TsukimotoX/PT-Framework" />
+              <readme>README.md</readme>
             </metadata>
             <files>
+              <file src="README.md" target="." />
+              <file src="LICENSE" target="." />
               <file src="artifacts/windows-latest-artifacts/**/*" target="lib/net9.0" />
               <file src="artifacts/ubuntu-latest-artifacts/**/*" target="lib/net9.0" />
               <file src="artifacts/macos-latest-artifacts/**/*" target="lib/net9.0" />
@@ -99,7 +104,7 @@ jobs:
       run: nuget pack ProjectTerra.Framework.nuspec -OutputDirectory artifacts/nuget/
   
     - name: Publish to NuGet
-      run: dotnet nuget push artifacts/nuget/ProjectTerra.Framework.0.0.${{ github.run_number }}.nupkg \
-        --api-key ${{ secrets.NUGET_API_KEY }} \
-        --source https://api.nuget.org/v3/index.json \
+      run: dotnet nuget push artifacts/nuget/ProjectTerra.Framework.0.0.${{ github.run_number }}.nupkg `
+        --api-key ${{ secrets.NUGET_API_KEY }} `
+        --source https://api.nuget.org/v3/index.json `
         --skip-duplicate

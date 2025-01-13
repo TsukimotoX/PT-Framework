@@ -1,4 +1,4 @@
-name: Build PT-Framework for Desktop
+name: Build PT-Framework for Desktop and Mobile
 
 on:
   workflow_dispatch:
@@ -7,67 +7,15 @@ on:
     branches:
       - main
 
-
 permissions:
   contents: write
   discussions: write
 
 jobs:
-  build-desktop:
+  build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4.2.2
-
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v4.2.0
-      with:
-        dotnet-version: 8.x
-
-    - name: Publish build artifacts
-      env:
-        BUILD_NUMBER: ${{ github.run_number }}
-      run: |
-        dotnet publish PT-Framework.csproj --configuration Release --framework net8.0 --output artifacts/publish/desktop/${{ matrix.os }}/ /p:Version=0.0.${{ github.run_number }}
-
-    - name: Archive artifacts (ubuntu and macos)
-      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
-      run: |
-        mkdir -p ./releases
-        zip -r ./releases/PT-Framework-${{ matrix.os }}.zip ./artifacts/publish/desktop/${{ matrix.os }}/
-      
-    - name: Archive artifacts (windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        mkdir -p ./releases
-        Compress-Archive -Path ./artifacts/publish/desktop/${{ matrix.os }}/* -DestinationPath ./releases/PT-Framework-${{ matrix.os }}.zip
-    
-    - name: Upload artifacts to GitHub Actions
-      uses: actions/upload-artifact@v4.6.0
-      with:
-          name: ${{ matrix.os }}-desktop-artifacts
-          path: artifacts
-
-    - name: Upload artifacts to GitHub Releases
-      uses: softprops/action-gh-release@v2.2.1
-      with:
-        files: ./releases/PT-Framework-desktop-${{ matrix.os }}.zip
-        tag_name: testing-phase
-        name: "Testing Phase Release for PT-Framework"
-        draft: false
-        prerelease: false
-        generate_release_notes: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
-  
-  build-mobile:
-    strategy:
-      matrix:
-        os: [android, ios]
+        os: [windows, macos, android, ios]
     runs-on: macos-latest
     steps:
     - name: Checkout repository
@@ -77,37 +25,36 @@ jobs:
       uses: actions/setup-dotnet@v4.2.0
       with:
         dotnet-version: 8.x
-      
-    - name: Install ${{ matrix.os }} workload
-      run: |
-        dotnet workload install ${{ matrix.os }}
-        dotnet restore
-        dotnet workload list
-        dotnet nuget locals all --clear
 
-    - name: Publish build artifacts
+    - name: Publish build artifacts (Desktop)
+      if: ${{ matrix.os == 'windows' || matrix.os == 'macos' }}
       env:
         BUILD_NUMBER: ${{ github.run_number }}
       run: |
-        dotnet restore PT-Framework.csproj
-        dotnet publish PT-Framework.csproj --configuration Release --framework net8.0-${{ matrix.os }} --output artifacts/publish/desktop/${{ matrix.os }}/ /p:Version=0.0.${{ github.run_number }}
-      
+        dotnet publish PT-Framework.csproj --configuration Release --framework net8.0 --output artifacts/publish/${{ matrix.os }}/ /p:Version=0.0.${{ github.run_number }}
+
+    - name: Publish build artifacts (Mobile)
+      if: ${{ matrix.os == 'ios' || matrix.os == 'android' }}
+      env:
+        BUILD_NUMBER: ${{ github.run_number }}
+      run: |
+        dotnet publish PT-Framework.csproj --configuration Release --framework net8.0-${{ matrix.os }} --output artifacts/publish/${{ matrix.os }}/ /p:Version=0.0.${{ github.run_number }}
 
     - name: Archive artifacts
       run: |
         mkdir -p ./releases
-        zip -r ./releases/PT-Framework-${{ matrix.os }}.zip ./artifacts/publish/mobile/${{ matrix.os }}/
-
+        zip -r ./releases/PT-Framework-${{ matrix.os }}.zip ./artifacts/publish/${{ matrix.os }}/
+      
     - name: Upload artifacts to GitHub Actions
       uses: actions/upload-artifact@v4.6.0
       with:
-          name: ${{ matrix.os }}-mobile-artifacts
+          name: ${{ matrix.os }}-artifacts
           path: artifacts
-    
+
     - name: Upload artifacts to GitHub Releases
       uses: softprops/action-gh-release@v2.2.1
       with:
-        files: ./releases/PT-Framework-mobile-${{ matrix.os }}.zip
+        files: ./releases/PT-Framework-${{ matrix.os }}.zip
         tag_name: testing-phase
         name: "Testing Phase Release for PT-Framework"
         draft: false
@@ -115,10 +62,10 @@ jobs:
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      
   nuget-upload:
-    runs-on: windows-latest
-    needs: [build-desktop, build-mobile]
+    runs-on: macos-latest
+    needs: [build]
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.2.2
@@ -140,13 +87,12 @@ jobs:
         mkdir -p nuget/lib/net8.0-ios
         mkdir -p nuget/lib/net8.0-android
 
-        Copy-Item -Path artifacts/windows-latest-desktop-artifacts/* -Destination nuget/lib/net8.0/ -Recurse -Force
-        Copy-Item -Path artifacts/linux-latest-desktop-artifacts/* -Destination nuget/lib/net8.0/ -Recurse -Force
-        Copy-Item -Path artifacts/macos-latest-desktop-artifacts/* -Destination nuget/lib/net8.0/ -Recurse -Force
-        Copy-Item -Path artifacts/windows-latest-desktop-artifacts/* -Destination nuget/lib/net8.0-windows/ -Recurse -Force
+        Copy-Item -Path artifacts/windows-artifacts/* -Destination nuget/lib/net8.0/ -Recurse -Force
+        Copy-Item -Path artifacts/macos-artifacts/* -Destination nuget/lib/net8.0/ -Recurse -Force
+        Copy-Item -Path artifacts/windows-artifacts/* -Destination nuget/lib/net8.0-windows/ -Recurse -Force
 
-        Copy-Item -Path artifacts/ios-mobile-artifacts/* -Destination nuget/lib/net8.0-ios/ -Recurse -Force
-        Copy-Item -Path artifacts/android-mobile-artifacts/* -Destination nuget/lib/net8.0-android/ -Recurse -Force
+        Copy-Item -Path artifacts/ios-artifacts/* -Destination nuget/lib/net8.0-ios/ -Recurse -Force
+        Copy-Item -Path artifacts/android-artifacts/* -Destination nuget/lib/net8.0-android/ -Recurse -Force
 
     - name: Pack NuGet package
       run: |

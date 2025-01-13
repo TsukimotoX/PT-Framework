@@ -11,6 +11,10 @@ permissions:
   contents: write
   discussions: write
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     strategy:

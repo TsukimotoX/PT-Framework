@@ -73,6 +73,10 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.2.2
+    
+    - name: Uninstall .NET 8 (conflicts)
+      run: |
+        rm -rf ~/.dotnet/sdk/8.0*
 
     - name: Setup .NET Core SDK
       uses: actions/setup-dotnet@v4.2.0
@@ -82,7 +86,6 @@ jobs:
       
     - name: Install ${{ matrix.os }} workload
       run: |
-        dotnet workload uninstall microsoft.net.workload.emscripten.current
         dotnet workload clean
         dotnet workload install ${{ matrix.os }}
         dotnet restore

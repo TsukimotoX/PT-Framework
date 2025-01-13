@@ -92,8 +92,8 @@ jobs:
               <readme>README.md</readme>
             </metadata>
             <files>
-              <file src="README.md" target="." />
-              <file src="LICENSE" target="." />
+              <file src="README.md" target="\" />
+              <file src="LICENSE" target="\" />
               <file src="artifacts/windows-latest-artifacts/**/*" target="lib/net9.0" />
               <file src="artifacts/ubuntu-latest-artifacts/**/*" target="lib/net9.0" />
               <file src="artifacts/macos-latest-artifacts/**/*" target="lib/net9.0" />

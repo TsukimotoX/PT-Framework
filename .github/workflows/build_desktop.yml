@@ -1,4 +1,4 @@
-name: Build PT-Framework for Desktop and Mobile
+name: Build PT-Framework for Desktop
 
 on:
   workflow_dispatch:
@@ -15,8 +15,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows, macos, android, ios]
-    runs-on: macos-latest
+        os: [windows, macos, linux]
+    runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4.2.2
@@ -26,32 +26,28 @@ jobs:
       with:
         dotnet-version: 8.x
       
-    - name: Download workloads
-      run: |
-        dotnet workload install android
-        dotnet workload install ios
-
     - name: Restore dependencies
       run: |
         dotnet restore PT-Framework.csproj
 
-    - name: Publish build artifacts (Desktop)
-      if: ${{ matrix.os == 'windows' || matrix.os == 'macos' }}
+    - name: Publish build artifacts
       env:
         BUILD_NUMBER: ${{ github.run_number }}
       run: |
-        dotnet publish PT-Framework.csproj --configuration Release --framework net8.0 --output artifacts/publish/${{ matrix.os }}/ /p:Version=0.0.${{ github.run_number }}
-
-    - name: Publish build artifacts (Mobile)
-      if: ${{ matrix.os == 'ios' || matrix.os == 'android' }}
-      env:
-        BUILD_NUMBER: ${{ github.run_number }}
-      run: |
-        dotnet publish PT-Framework.csproj --configuration Release --framework net8.0-${{ matrix.os }} /p:Version=0.0.${{ github.run_number }} /p:PublishDir=./artifacts/publish/${{ matrix.os }}/
+        if [[ "${{ matrix.os }}" == "windows" ]]; then
+          dotnet publish PT-Framework.csproj --configuration Release --framework net8.0 --runtime win-x64 --output artifacts/publish/windows/ /p:Version=0.0.${{ github.run_number }}
+        elif [[ "${{ matrix.os }}" == "macos" ]]; then
+          dotnet publish PT-Framework.csproj --configuration Release --framework net8.0 --runtime osx-x64 --output artifacts/publish/macos/ /p:Version=0.0.${{ github.run_number }}
+        elif [[ "${{ matrix.os }}" == "linux" ]]; then
+          dotnet publish PT-Framework.csproj --configuration Release --framework net8.0 --runtime linux-x64 --output artifacts/publish/linux/ /p:Version=0.0.${{ github.run_number }}
+        fi
 
     - name: Archive artifacts
       run: |
-        ls -R ./artifacts/publish/${{ matrix.os }}/
+        if [[ ! -d ./artifacts/publish/${{ matrix.os }}/ ]]; then
+          echo "No artifacts found for ${{ matrix.os }}. Skipping."
+          exit 1
+        fi
         mkdir -p ./releases
         zip -r ./releases/PT-Framework-${{ matrix.os }}.zip ./artifacts/publish/${{ matrix.os }}/
       
@@ -74,7 +70,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
   nuget-upload:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     needs: [build]
     steps:
     - name: Checkout repository
@@ -94,15 +90,12 @@ jobs:
       run: |
         mkdir -p nuget/lib/net8.0
         mkdir -p nuget/lib/net8.0-windows
-        mkdir -p nuget/lib/net8.0-ios
-        mkdir -p nuget/lib/net8.0-android
+        mkdir -p nuget/lib/net8.0-linux
+        mkdir -p nuget/lib/net8.0-macos
 
-        Copy-Item -Path artifacts/windows-artifacts/* -Destination nuget/lib/net8.0/ -Recurse -Force
-        Copy-Item -Path artifacts/macos-artifacts/* -Destination nuget/lib/net8.0/ -Recurse -Force
-        Copy-Item -Path artifacts/windows-artifacts/* -Destination nuget/lib/net8.0-windows/ -Recurse -Force
-
-        Copy-Item -Path artifacts/ios-artifacts/* -Destination nuget/lib/net8.0-ios/ -Recurse -Force
-        Copy-Item -Path artifacts/android-artifacts/* -Destination nuget/lib/net8.0-android/ -Recurse -Force
+        cp -r artifacts/publish/windows/* nuget/lib/net8.0-windows/
+        cp -r artifacts/publish/linux/* nuget/lib/net8.0-linux/
+        cp -r artifacts/publish/macos/* nuget/lib/net8.0-macos/
 
     - name: Pack NuGet package
       run: |
@@ -111,4 +104,3 @@ jobs:
     - name: Publish to NuGet
       run: |
         dotnet nuget push artifacts/nuget/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
-

@@ -10,7 +10,7 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
     <AdditionalFrameworks>net9.0-windows</AdditionalFrameworks>
   </PropertyGroup>
@@ -20,8 +20,8 @@
 
   <PropertyGroup Label="NuGet package details.">
     <PackageId>ProjectTerra.Framework</PackageId>
-    <PackageVersion>0.0.$(BUILD_NUMBER)</PackageVersion>
-    <Version>0.0.$(BUILD_NUMBER)</Version>
+    <PackageVersion>0.0.0</PackageVersion>
+    <Version>0.0.0</Version>
     <Authors>Tsukimoto</Authors>
     <Description>Cross-platform framework designed to help the development of ProjectTerra and other games</Description>
     <PackageTags>framework; game; ProjectTerra; game development; cross-platform; cross-platform framework; cross-platform game; PT; PT-Framework; PT Framework;</PackageTags>

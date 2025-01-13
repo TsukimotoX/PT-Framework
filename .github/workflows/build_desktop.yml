@@ -25,6 +25,15 @@ jobs:
       uses: actions/setup-dotnet@v4.2.0
       with:
         dotnet-version: 8.x
+      
+    - name: Download workloads
+      run: |
+        dotnet workload install android
+        dotnet workload install ios
+
+    - name: Restore dependencies
+      run: |
+        dotnet restore PT-Framework.sln
 
     - name: Publish build artifacts (Desktop)
       if: ${{ matrix.os == 'windows' || matrix.os == 'macos' }}

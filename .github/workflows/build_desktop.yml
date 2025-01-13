@@ -3,6 +3,10 @@ name: Build PT-Framework for Desktop
 on:
   workflow_dispatch:
   workflow_call:
+  push:
+    branches:
+      - main
+
 
 permissions:
   contents: write

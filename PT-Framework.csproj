@@ -2,21 +2,20 @@
   <PropertyGroup Label="Project Details">
     <OutputType>Library</OutputType>
     <!-- DO NOT REMOVE THIS OR ELSE THE BUILD BREAKS!!!! -->
-    <PropertyGroup>
-      <TargetFrameworks>net9.0;$(AdditionalFrameworks)</TargetFrameworks>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-      <AdditionalFrameworks>net9.0-windows</AdditionalFrameworks>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(OS)' == 'Darwin'">
-      <AdditionalFrameworks>net9.0-ios;net9.0-android</AdditionalFrameworks>
-    </PropertyGroup>
+    <TargetFrameworks>net9.0;$(AdditionalFrameworks)</TargetFrameworks>
 
     <AssemblyName>ProjectTerra.Framework</AssemblyName>
     <RootNamespace>ProjectTerra.Framework</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <AdditionalFrameworks>net9.0-windows</AdditionalFrameworks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' == 'Darwin'">
+    <AdditionalFrameworks>net9.0-ios;net9.0-android</AdditionalFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet package details.">

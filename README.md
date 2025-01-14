@@ -4,7 +4,7 @@
 
 ## Features
 
-- **Cross-Platform Compatibility**: Develop games that run seamlessly on multiple platforms.
+- **Cross-Platform Compatibility**: Develop games that run seamlessly on multiple platforms, like Windows, Mac OS, Linux, Android and iOS.
 - **Voxel-Based World Generation**: Create and manipulate voxel terrains with ease.
 - **Modular Architecture**: Extend functionality through a modular and flexible design.
 - **High Performance**: Optimized for efficient rendering and gameplay.

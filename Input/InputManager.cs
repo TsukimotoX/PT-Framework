@@ -6,14 +6,31 @@ namespace ProjectTerra.Framework.Input;
 
 // This is the main input manager, responsible for processing inputs on host from various connectable devices
 public unsafe class InputManager {
-    public List<IInputDevice> InputDevices { get; } = new List<IInputDevice>();
+    public List<IInputDevice> InputDevices { get; private set; } = new List<IInputDevice>();
     public IInputDevice? ActiveInputDevice { get; private set; }
 
     public InputManager() {
-        if (Host.platform == "Windows" || Host.platform == "MacOS" || Host.platform == "Linux") InputDevices.Add(new KeyboardMouseID());
-        if (Host.platform == "Android" || Host.platform == "iOS") InputDevices.Add(new TouchID());
+        if (Host.platform == "Windows" || Host.platform == "MacOS" || Host.platform == "Linux") {
+            var keyboardMouse = new KeyboardMouseID();
+            InputDevices.Add(keyboardMouse);
+            Console.WriteLine("Keyboard and mouse detected.");
+        }
+        else if (Host.platform == "Android" || Host.platform == "iOS") {
+            var touch = new TouchID();
+            InputDevices.Add(touch);
+            Console.WriteLine("Touch input detected.");
+        }
+        else {
+            throw new NotSupportedException("Unsupported platform.");
+        }
 
-        ActiveInputDevice = InputDevices[0];
+        Console.WriteLine($"Input devices: {string.Join(", ", InputDevices.Select(x => x.Name))}");
+
+        if (InputDevices.Count > 0) {
+            ActiveInputDevice = InputDevices[0];
+        } else {
+            Console.WriteLine("No input devices available for this platform. Please check your input settings.");
+        }
     }
 
     public void Update() {

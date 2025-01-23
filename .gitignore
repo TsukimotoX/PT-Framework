@@ -1,6 +1,7 @@
 # Ignore build directories & solution
 bin/
 obj/
+build
 *.sln
 
 # Ignore Visual Studio specific files

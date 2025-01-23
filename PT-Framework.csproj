@@ -2,7 +2,8 @@
   <PropertyGroup Label="Project Details">
     <OutputType>Library</OutputType>
     <!-- DO NOT REMOVE THIS OR ELSE THE BUILD BREAKS!!!! -->
-    <TargetFrameworks>net8.0;net8.0-windows;net8.0-android;net8.0-ios</TargetFrameworks>
+    <!-- <TargetFrameworks>net8.0;net8.0-windows;net8.0-android;net8.0-ios</TargetFrameworks> -->
+    <TargetFramework>net9.0</TargetFramework>
     <AssemblyName>ProjectTerra.Framework</AssemblyName>
     <RootNamespace>ProjectTerra.Framework</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -10,10 +11,11 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <!-- If i am ever gonna support nuget again... -->
   <PropertyGroup Label="NuGet package details.">
     <PackageId>ProjectTerra.Framework</PackageId>
-    <PackageVersion>0.0.0</PackageVersion>
-    <Version>0.0.0</Version>
+    <PackageVersion>0.0.1</PackageVersion>
+    <Version>0.0.1</Version>
     <Authors>Tsukimoto</Authors>
     <Description>Cross-platform framework designed to help the development of ProjectTerra and other games</Description>
     <PackageTags>framework; game; ProjectTerra; game development; cross-platform; cross-platform framework; cross-platform game; PT; PT-Framework; PT Framework;</PackageTags>

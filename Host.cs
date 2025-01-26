@@ -1,7 +1,10 @@
-using System.Numerics;
+using JetBrains.Annotations;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using ProjectTerra.Framework.Graphics;
 using ProjectTerra.Framework.Input;
-using ProjectTerra.Framework.Math;
+using ProjectTerra.Framework.Maths;
+using SDL;
 
 public class Host
 {
@@ -34,7 +37,15 @@ public class Host
         _window.Initialize();
         _renderer.Initialize(_window);
 
+        Start();
+
         while(true){
+            var error = GL.GetError();
+            if (error != ErrorCode.NoError) Console.WriteLine($"OpenGL Error: {error}");
+            var sdlerror = SDL3.SDL_GetError();
+            if (sdlerror != null && sdlerror != "") Console.WriteLine($"SDL Error: [{sdlerror}]");
+
+
             _window.Update();
             _renderer.Render();
             _inputManager.Update();
@@ -42,17 +53,45 @@ public class Host
     }
 
     public void Start(){
+
         Console.WriteLine("The game is starting...");
         Console.WriteLine("ProjectTerra version is " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
         Console.WriteLine("ProjectTerra.Framework version is " + typeof(ProjectTerra.Framework.Input.InputManager).Assembly.GetName().Version);
 
-        Vertex[] vertices = [
-            new Vertex(new Vector3(0, 0, 0), new Vector3(1, 0, 0), new Vector2(0, 0)),
-            new Vertex(new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector2(1, 0)),
-            new Vertex(new Vector3(1, 1, 0), new Vector3(0, 0, 1), new Vector2(1, 1)),
-            new Vertex(new Vector3(0, 1, 0), new Vector3(1, 1, 1), new Vector2(0, 1))
-        ];
+        Vertex[] vertices = {
+            new Vertex((0, 0, 0), (1, 0, 0, 1), (0, 0)), //0
+            new Vertex((0, 1, 0), (0, 1, 0, 1), (0, 1)), //1
+            new Vertex((1, 0, 0), (0, 0, 1, 1), (1, 0)), //2
+            new Vertex((1, 1, 0), (1, 1, 0, 1), (1, 1))  //3
+        };
+
+        int[] indices = { 
+            0, 1, 2, 
+            1, 3, 2,
+        };
+
+        var buffer = new ShaderBuffer(vertices, indices);
+
+        var shader = new DefaultShader(DefaultShader.builtinVertexShader(), DefaultShader.builtinFragmentShader());
+        shader.Use();
+
+        var texture = new Drawable("../PT-Framework/stone.png");
+        texture.Use(TextureUnit.Texture0);
+
+        int textureLocation = GL.GetUniformLocation(shader.GetProgram(), "texture0");
+        GL.Uniform1(textureLocation, 0);
+        GL.ActiveTexture(TextureUnit.Texture0);
+        GL.BindTexture(TextureTarget.Texture2D, texture.GetHandle());
+        
+        _renderer.AddRenderAction("render", () => {
+            buffer.Bind();
+            GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
+            buffer.Unbind();
+            //Console.WriteLine("Rendering...");
+        });
+
     }
+
 
     public static void Quit() => Environment.Exit(0);
 }

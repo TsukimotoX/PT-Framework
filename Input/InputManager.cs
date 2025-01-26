@@ -1,6 +1,7 @@
 #pragma warning disable CS8602 // Thinks gamepad in the code can be null, which's not possible. Using this for now, better fix in the future.
 
 using SDL;
+using System.Numerics;
 
 namespace ProjectTerra.Framework.Input;
 
@@ -242,7 +243,7 @@ public unsafe class GamepadID : IInputDevice {
 
     // Use this to normalize values between -1 and 1, because SDL returns values between -32767 and 32767.
     // Trust me, it's easier to work with.
-    float NormalizeAxis(int value, float deadZone = 0.2f) => Math.Abs(value / 32767f) < deadZone ? 0 : value / 32767f;
+    float NormalizeAxis(int value, float deadZone = 0.2f) => MathF.Abs(value / 32767f) < deadZone ? 0 : value / 32767f;
 
     public (float x, float y) GetJoystickPos() => joystickPos;
     public (float x, float y) GetPointerPos() => pointerPos; 

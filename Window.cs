@@ -4,7 +4,7 @@ public unsafe class DefaultWindow : IWindow
 {
     private SDL_Window* _sdlWindow;
 
-    public (int width, int height) Size { get; private set; } = (800, 600);
+    public (int width, int height) Size { get; private set; } = (1280, 768);
     public (int x, int y) Position { get; private set; } = (100, 100);
     public string Title { get; private set; } = "Default Window";
 

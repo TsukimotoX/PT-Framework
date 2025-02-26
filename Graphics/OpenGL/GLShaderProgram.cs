@@ -1,21 +1,21 @@
 using OpenTK.Graphics.OpenGL;
 
-namespace ProjectTerra.Framework.Graphics;
+namespace ProjectTerra.Framework.Graphics.OpenGL;
 
 // DefaultShader is a default implementation of IShader using OpenGL
-public class DefaultShader : IShader {
+public class GLShaderProgram : IShaderProgram {
     private int programID;
     private string vertexSource;
     private string fragmentSource;
 
-    public DefaultShader(string vertexSource, string fragmentSource) {
+    public GLShaderProgram(string vertexSource, string fragmentSource) {
         this.vertexSource = AdjustPlatform(vertexSource, ShaderType.VertexShader);
         this.fragmentSource = AdjustPlatform(fragmentSource, ShaderType.FragmentShader);
 
         Compile();
     }
 
-    ~DefaultShader() {
+    ~GLShaderProgram() {
         GL.DeleteProgram(programID);
     }
 
@@ -110,10 +110,4 @@ public class DefaultShader : IShader {
         "    }\n" +
         "}";
 
-}
-
-// IShader is an interface for creating Shaders based on different graphics APIs, like OpenGL, Vulkan, DirectX and etc.
-public interface IShader { 
-    void Compile();
-    void Use();
 }

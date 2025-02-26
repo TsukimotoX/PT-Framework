@@ -4,10 +4,10 @@ using ProjectTerra.Framework.Graphics;
 namespace ProjectTerra.Framework.Components.SubComponents;
 
 public class Texture : Component {
-    private Drawable _drawable;
+    private IRenderable _drawable;
 
     public Texture(string path) {
-        _drawable = new Drawable(path);
+        //_drawable = new Drawable(path);
     }
 
     public override void Render()
@@ -16,5 +16,8 @@ public class Texture : Component {
         Use();
     }
 
-    public void Use(TextureUnit unit = TextureUnit.Texture0) => _drawable.Use(unit);
+    public void Use(TextureUnit unit = TextureUnit.Texture0)
+    {
+        //_drawable.Use(unit);
+    }
 }

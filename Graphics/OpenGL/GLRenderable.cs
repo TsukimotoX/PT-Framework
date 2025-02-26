@@ -1,14 +1,14 @@
 using StbImageSharp;
 using OpenTK.Graphics.OpenGL;
 
-namespace ProjectTerra.Framework.Graphics;
+namespace ProjectTerra.Framework.Graphics.OpenGL;
 
 
 // Drawable is a class for loading and using OpenGL textures. For using texture on GameObject, use Texture class.
-public class Drawable {
+public class GLRenderable : IRenderable {
     private int _handle;
 
-    public Drawable(string path){
+    public GLRenderable(string path){
         var imageData = LoadTextureData(path, out int width, out int height);
         Console.WriteLine($"Width: {width}, Height: {height}");
 
@@ -26,7 +26,7 @@ public class Drawable {
         GL.BindTexture(TextureTarget.Texture2D, 0);
     }
 
-    ~Drawable(){
+    ~GLRenderable(){
         GL.DeleteTexture(_handle);
     }
 

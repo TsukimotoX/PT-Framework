@@ -2,6 +2,10 @@
 bin/
 obj/
 build
+
+.vs
+.vscode
+
 *.sln
 
 # Ignore Visual Studio specific files
